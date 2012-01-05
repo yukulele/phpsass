@@ -1,0 +1,11 @@
+This is fork of phamlp primarily for inclusiong as a Drupal pre-processor.
+However, there is no Drupal-specific code and it will work for any PHP system.
+
+Contributors:
+Richard Lyon - @richthegeek
+Sebastian Siemssen - @thefuhby
+Sam Kottler - @samkottler
+
+Origin: http://code.google.com/p/phamlp/
+
+License: http://www.opensource.org/licenses/bsd-license.php
