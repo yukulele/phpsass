@@ -803,8 +803,8 @@ class SassParser {
       case '@return':
         return new SassReturnNode($token);
         break;
-      case '@warn':
-        return new SassWarnNode($token);
+      case '@media':
+        return new SassMediaNode($token);
         break;
       case '@mixin':
         return new SassMixinDefinitionNode($token);
@@ -843,11 +843,11 @@ class SassParser {
       case '@while':
         return new SassWhileNode($token);
         break;
+      case '@warn':
+        return new SassWarnNode($token);
+        break;
       case '@debug':
         return new SassDebugNode($token);
-        break;
-      case '@warn':
-        return new SassDebugNode($token, true);
         break;
       default:
         return new SassDirectiveNode($token);

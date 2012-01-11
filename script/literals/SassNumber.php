@@ -52,7 +52,7 @@ class SassNumber extends SassLiteral {
     'pt' => 72,
   );
   static private $validUnits = array(
-    'in', 'cm', 'mm', 'pc', 'pt', 'em', 'ex', 'px', '%'
+    'in', 'cm', 'mm', 'pc', 'pt', 'em', 'ex', 'px', '%', 's'
   );
 
   /**

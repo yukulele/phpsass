@@ -62,9 +62,9 @@ class SassRuleNode extends SassNode {
    * If the selectors are to continue for the rule the selector must end in a comma
    * @param string selector
    */
-  public function addSelectors($selectors) {
+  public function addSelectors($selectors, $explode = true) {
     $this->isContinued = substr($selectors, -1) === self::CONTINUED;
-    $this->selectors = array_merge($this->selectors, $this->explode($selectors));
+    $this->selectors = array_merge($this->selectors, $explode ? $this->explode($selectors) : $selectors);
   }
 
   /**

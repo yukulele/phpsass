@@ -32,6 +32,7 @@ require_once('SassFunctionDefinitionNode.php');
 require_once('SassReturnNode.php');
 require_once('SassContentNode.php');
 require_once('SassWarnNode.php');
+require_once('SassMediaNode.php');
 
 /**
  * SassNode class.

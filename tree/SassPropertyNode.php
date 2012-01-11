@@ -16,7 +16,7 @@
  * @subpackage  Sass.tree
  */
 class SassPropertyNode extends SassNode {
-  const MATCH_PROPERTY_NEW = '/^([^\s=:"]+)\s*(?:(= )|:)([^\:].*?)$/';
+  const MATCH_PROPERTY_NEW = '/^([^\s=:"]+)\s*(?:(= )|:)([^\:].*?)?$/';
   const MATCH_PROPERTY_OLD = '/^:([^\s=:]+)(?:\s*(=)\s*|\s+|$)(.*)/';
   const MATCH_PSUEDO_SELECTOR = '/^:*\w[-\w]+\(?/i';
   const MATCH_INTERPOLATION = '/^#\{(.*?)\}/i';
@@ -79,12 +79,17 @@ class SassPropertyNode extends SassNode {
   public function __construct($token, $syntax = 'new') {
     parent::__construct($token);
     $matches = self::match($token, $syntax);
-    $this->name = $matches[self::NAME];
-    $this->value = $matches[self::VALUE];
-    if ($matches[self::SCRIPT] === self::IS_SCRIPT) {
-      $this->addWarning('Setting CSS properties with "=" is deprecated; use "{name}: {value};"',
-          array('{name}'=>e, '{value}'=>$this->value)
-      );
+    $this->name = @$matches[self::NAME];
+    if (!isset($matches[self::VALUE])) {
+      $this->value = '';
+    }
+    else {
+      $this->value = $matches[self::VALUE];
+      if ($matches[self::SCRIPT] === self::IS_SCRIPT) {
+        $this->addWarning('Setting CSS properties with "=" is deprecated; use "{name}: {value};"',
+            array('{name}'=>e, '{value}'=>$this->value)
+        );
+      }
     }
   }
 
@@ -186,13 +191,10 @@ class SassPropertyNode extends SassNode {
    * @return boolean true if the token represents this type of node, false if not
    */
   public static function isa($token) {
-
-    if(!is_array($token))
-    {
+    if(!is_array($token)) {
       $syntax = 'old';
     }
-    else
-    {
+    else {
       $syntax = $token['syntax'];
       $token = $token['token'];
     }
@@ -200,8 +202,7 @@ class SassPropertyNode extends SassNode {
     $matches = self::match($token, $syntax);
 
     if (!empty($matches)) {
-      if (isset($matches[self::VALUE]) &&
-          self::isPseudoSelector($matches[self::VALUE])) {
+      if (isset($matches[self::VALUE]) && self::isPseudoSelector($matches[self::VALUE])) {
         return false;
       }
       if ($token->level === 0) {
