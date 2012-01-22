@@ -19,7 +19,7 @@ class SassFile {
   const CSS  = 'css';
   const SASS = 'sass';
   const SCSS = 'scss';
-  const SASSC = 'sassc';
+  // const SASSC = 'sassc'; # tests for E_NOTICE
 
   private static $extensions = array(self::SASS, self::SCSS);
 
@@ -87,6 +87,7 @@ class SassFile {
    */
   public static function get_file($filename, $parser) {
     $ext = substr($filename, strrpos($filename, '.') + 1);
+    // if the last char isn't *, and it's not (.sass|.scss|.css)
     if (substr($filename, -1) != '*' && $ext !== self::SASS && $ext !== self::SCSS && $ext !== self::CSS) {
       $sass = self::get_file($filename . '.' . self::SASS, $parser);
       return $sass ? $sass : self::get_file($filename . '.' . self::SCSS, $parser);

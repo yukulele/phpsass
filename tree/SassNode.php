@@ -335,9 +335,14 @@ class SassNode {
   public function parseChildren($context) {
     $children = array();
     foreach ($this->children as $child) {
-      $kid = $child->parse($context);
+      # child could be a SassLiteral /or/ SassNode
+      if (method_exists($child, 'parse')) {
+        $kid = $child->parse($context);
+      } else {
+        $kid = array($child);
+      }
       $children = array_merge($children, $kid);
-    } // foreach
+    }
     return $children;
   }
 

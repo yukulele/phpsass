@@ -35,7 +35,7 @@ class SassImportNode extends SassNode {
     parent::__construct($token);
     preg_match(self::MATCH, $token->source, $matches);
     foreach (explode(',', $matches[self::FILES]) as $file) {
-      $this->files[] = trim($file);
+      $this->files[] = trim($file, '"\'; ');
     }
   }
 
@@ -49,6 +49,9 @@ class SassImportNode extends SassNode {
   public function parse($context) {
     $imported = array();
     foreach ($this->files as $file) {
+        if (preg_match(self::MATCH_CSS, $file)) {
+          return array(new SassString("@import url('$file');\n"));
+        }
         $file = trim($file, '\'"');
         $files = SassFile::get_file($file, $this->parser);
         $tree = array();
@@ -56,8 +59,7 @@ class SassImportNode extends SassNode {
           $tree = new SassRootNode($this->parser);
           foreach ($files as $f) {
             if (preg_match(self::MATCH_CSS, $f)) {
-              $f = '"' . trim($file, '"') . '"';
-              return array(new SassString("@import url($f);"));
+              $tree->addChild(new SassString("@import url('$f');\n"));
             }
             else {
               $f = SassFile::get_tree($f, $this->parser);
@@ -70,7 +72,6 @@ class SassImportNode extends SassNode {
         if (!empty($tree)) {
           $imported = array_merge($imported, $tree->parse($context)->children);
         }
-
     }
     return $imported;
   }
