@@ -87,7 +87,7 @@ class SassPropertyNode extends SassNode {
       $this->value = $matches[self::VALUE];
       if ($matches[self::SCRIPT] === self::IS_SCRIPT) {
         $this->addWarning('Setting CSS properties with "=" is deprecated; use "{name}: {value};"',
-            array('{name}'=>e, '{value}'=>$this->value)
+            array('{name}'=>$this->name, '{value}'=>$this->value)
         );
       }
     }

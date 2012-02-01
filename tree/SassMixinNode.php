@@ -73,7 +73,7 @@ class SassMixinNode extends SassNode {
         $context->setVariable($name, $result);
       }
       else {
-        throw new SassMixinNodeException("Mixin::$name: Required variable ($this->name) not given.\nMixin defined: ' . $mixin->token->filename . '::' . $mixin->token->line . '\nMixin used", $this);
+        throw new SassMixinNodeException("Mixin::$name: Required variable ($this->name) not given.\nMixin defined: ". $mixin->token->filename . "::" . $mixin->token->line . "\nMixin used", $this);
       }
     }
 
