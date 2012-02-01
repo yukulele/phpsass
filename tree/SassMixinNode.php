@@ -64,23 +64,26 @@ class SassMixinNode extends SassNode {
     $count = 0;
     foreach ($mixin->args as $name=>$value) {
       if ($count < $argc) {
-        $context->setVariable($name, $this->evaluate($this->args[$count++], $context));
+        $result = $this->evaluate($this->args[$count++], $context);
       }
       elseif (!is_null($value)) {
-        $context->setVariable($name, $this->evaluate($value, $context));
+        $result = $this->evaluate($value, $context);
+      }
+      if (isset($result)) {
+        $context->setVariable($name, $result);
       }
       else {
         throw new SassMixinNodeException("Mixin::$name: Required variable ($this->name) not given.\nMixin defined: ' . $mixin->token->filename . '::' . $mixin->token->line . '\nMixin used", $this);
       }
-    } // foreach
+    }
 
     $children = array();
     foreach ($mixin->children as $child) {
       $child->parent = $this;
       $children = array_merge($children, $child->parse($context));
-    } // foreach
+    }
 
-    //$context->merge();
+    // $context->merge();
     return $children;
   }
 

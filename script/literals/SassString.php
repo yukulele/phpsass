@@ -72,6 +72,17 @@ class SassString extends SassLiteral {
   }
 
   /**
+   * Evaluates the value as a boolean.
+   */
+  public function toBoolean() {
+    $value = strtolower(trim($this->value, ' "\''));
+    if (!$value || in_array($value, array('false', 'null', '0'))) {
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  /**
    * Returns the value of this string.
    * @return string the string
    */

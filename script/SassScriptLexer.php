@@ -65,7 +65,6 @@ class SassScriptLexer {
         foreach (SassScriptFunction::extractArgs($matches[SassScriptFunction::ARGS]) as $expression) {
           $args[] = $this->parser->evaluate($expression, $context);
         }
-
         $tokens[] = new SassScriptFunction($matches[SassScriptFunction::NAME], $args);
       }
       elseif (($match = SassBoolean::isa($string)) !== false) {

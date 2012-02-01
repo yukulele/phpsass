@@ -725,8 +725,10 @@ class SassScriptFunctions {
    * @see quote
    */
   public static function unquote($string) {
-    SassLiteral::assertType($string, 'SassString');
-    return new SassString($string->value);
+    if ($string instanceof SassString) {
+      return new SassString($string->value);
+    }
+    return $string;
   }
 
   /**

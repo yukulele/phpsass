@@ -95,6 +95,7 @@ class SassEachNode extends SassNode {
         $children = array_merge($children, $this->parseChildren($context));
       }
     }
+    $context->merge();
     return $children;
   }
 
