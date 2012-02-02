@@ -62,11 +62,8 @@ class SassImportNode extends SassNode {
             while (get_class($tree) != 'SassRuleNode' && get_class($tree) != 'SassRootNode' && isset($tree->parent)) {
               $tree = $tree->parent;
             }
-            foreach ($tree->children as $i => $kid) {
-              if ($kid == $this) {
-                unset ($tree->children[$i]);
-              }
-            }
+            $tree = clone $tree;
+            $tree->children = array();
           } else {
             $tree = new SassRootNode($this->parser);
           }
