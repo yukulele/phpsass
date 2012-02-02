@@ -31,8 +31,9 @@ class SassImportNode extends SassNode {
    * @param object source token
    * @return SassImportNode
    */
-  public function __construct($token) {
+  public function __construct($token, $parent) {
     parent::__construct($token);
+    $this->parent = $parent;
     preg_match(self::MATCH, $token->source, $matches);
     foreach (explode(',', $matches[self::FILES]) as $file) {
       $this->files[] = trim($file, '"\'; ');
@@ -56,7 +57,20 @@ class SassImportNode extends SassNode {
         $files = SassFile::get_file($file, $this->parser);
         $tree = array();
         if ($files) {
-          $tree = new SassRootNode($this->parser);
+          if ($this->token->level > 0) {
+            $tree = $this->parent;
+            while (get_class($tree) != 'SassRuleNode' && get_class($tree) != 'SassRootNode' && isset($tree->parent)) {
+              $tree = $tree->parent;
+            }
+            foreach ($tree->children as $i => $kid) {
+              if ($kid == $this) {
+                unset ($tree->children[$i]);
+              }
+            }
+          } else {
+            $tree = new SassRootNode($this->parser);
+          }
+
           foreach ($files as $f) {
             if (preg_match(self::MATCH_CSS, $f)) {
               $tree->addChild(new SassString("@import url('$f');\n"));
@@ -70,7 +84,15 @@ class SassImportNode extends SassNode {
           }
         }
         if (!empty($tree)) {
-          $imported = array_merge($imported, $tree->parse($context)->children);
+          # parent may be either SassRootNode (returns an object) or SassRuleNode (returns an array of nodes)
+          # so we parse then try get the children.
+          $parsed = $tree->parse($context);
+          if (!is_array($parsed) && isset($parsed->children)) {
+            $parsed = $parsed->children;
+          }
+          if (is_array($parsed)) {
+            $imported = array_merge($imported, $parsed);
+          }
         }
     }
     return $imported;

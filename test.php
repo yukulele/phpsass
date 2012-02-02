@@ -49,6 +49,9 @@ foreach ($files['by_name'] as $name => $test) {
 				$one = trim(current(array_pop($set)));
 				$two = trim(current(array_pop($set)));
 
+				$one = str_replace('"', "'", $one);
+				$two = str_replace('"', "'", $two);
+
 				$out = '';
 				for ($i = 0; $i < strlen($one); $i++) {
 					$a = substr($one, $i, 1);
@@ -92,6 +95,7 @@ function test_files($files, $dir = '.') {
 				$result = $fn($dir . '/' . $file);
 				$trim = preg_replace('/[\s;]+/', '', $result);
 				$trim = preg_replace('/\/\*.+?\*\//m', '', $trim);
+				$trim = str_replace('"', "'", $trim);
 			} catch (Exception $e) {
 				$result = $e->__toString();
 				$trim = $result;
@@ -103,7 +107,7 @@ function test_files($files, $dir = '.') {
 
 	$failures = array();
 	foreach ($trimmed as $file_1 => $val_1) {
-		foreach ($trimmed as $file_2 => $val_2) {
+		foreach ($trimmed as $file_2 => $val_2) {			
 			if ($file_1 != $file_2 && $val_1 != $val_2) {
 				$names = array($file_1, $file_2);
 				sort($names);

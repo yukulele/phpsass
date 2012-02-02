@@ -823,7 +823,7 @@ class SassParser {
             }
           }
         }
-        return new SassImportNode($token);
+        return new SassImportNode($token, $parent);
         break;
       case '@each':
         return new SassEachNode($token);
