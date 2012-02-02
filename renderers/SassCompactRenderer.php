@@ -108,6 +108,7 @@ class SassCompactRenderer extends SassCompressedRenderer {
     $debug = '';
     
     if ($node->debug_info) {
+      
       $debug  = $indent . self::DEBUG_INFO_RULE . '{';
       $debug .= 'filename{' . self::DEBUG_INFO_PROPERTY . ':' . preg_replace('/([^-\w])/', '\\\\\1', "file://{$node->filename}") . ';}';
       $debug .= 'line{' . self::DEBUG_INFO_PROPERTY . ":'{$node->line}';}";
