@@ -89,10 +89,10 @@ class SassFile {
    * @param SassParser Sass parser
    * @return array of string path(s) to file(s) or FALSE if no such file
    */
-  public static function get_file($filename, &$parser) {
+  public static function get_file($filename, &$parser, $sass_only = TRUE) {
     $ext = substr($filename, strrpos($filename, '.') + 1);
     // if the last char isn't *, and it's not (.sass|.scss|.css)
-    if (substr($filename, -1) != '*' && $ext !== self::SASS && $ext !== self::SCSS && $ext !== self::CSS) {
+    if ($sass_only && substr($filename, -1) != '*' && $ext !== self::SASS && $ext !== self::SCSS && $ext !== self::CSS) {
       $sass = self::get_file($filename . '.' . self::SASS, $parser);
       return $sass ? $sass : self::get_file($filename . '.' . self::SCSS, $parser);
     }
@@ -146,8 +146,8 @@ class SassFile {
             return $path;
           }
         }
-      } // foreach
+      }
     }
-      return false;
+    return false;
   }
 }
