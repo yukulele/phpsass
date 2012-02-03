@@ -32,7 +32,7 @@ class SassFile {
    * @param SassParser Sass parser
    * @return SassRootNode
    */
-  public static function get_tree($filename, $parser) {
+  public static function get_tree($filename, &$parser) {
     $contents = self::get_file_contents($filename, $parser);
 
     $options = array_merge($parser->options, array('line'=>1));
@@ -43,7 +43,11 @@ class SassFile {
       $options['syntax'] = $ext;
     }
 
-    $options['load_paths'][] = dirname($filename);
+    $dirname = dirname($filename);
+    $options['load_paths'][] = $dirname;
+    if (!in_array($dirname, $parser->load_paths)) {
+      $parser->load_paths[] = dirname($filename);
+    }
 
     $sassParser = new SassParser($options);
     $tree = $sassParser->parse($contents, FALSE);
@@ -85,7 +89,7 @@ class SassFile {
    * @param SassParser Sass parser
    * @return array of string path(s) to file(s) or FALSE if no such file
    */
-  public static function get_file($filename, $parser) {
+  public static function get_file($filename, &$parser) {
     $ext = substr($filename, strrpos($filename, '.') + 1);
     // if the last char isn't *, and it's not (.sass|.scss|.css)
     if (substr($filename, -1) != '*' && $ext !== self::SASS && $ext !== self::SCSS && $ext !== self::CSS) {
@@ -98,6 +102,9 @@ class SassFile {
     $paths = $parser->load_paths;
     if(is_string($parser->filename) && $path = dirname($parser->filename)) {
       $paths[] = $path;
+      if (!in_array($path, $parser->load_paths)) {
+        $parser->load_paths[] = $path;
+      }
     }
     foreach ($paths as $path) {
       $filepath = self::find_file($filename, realpath($path));
