@@ -38,11 +38,13 @@ class SassMixinDefinitionNode extends SassNode {
    * @return SassMixinDefinitionNode
    */
   public function __construct($token) {
-    if ($token->level !== 0) {
-      throw new SassMixinDefinitionNodeException('Mixins can only be defined at root level', $token);
-    }
-    parent::__construct($token);
+
+    // if ($token->level > 1) {
+    //   throw new SassMixinDefinitionNodeException('Mixins can only be defined at root level. Token was set at level ' . $token->level, $token);
+    // }
+
     preg_match(self::MATCH, $token->source, $matches);
+    parent::__construct($token);
     if (empty($matches)) {
       throw new SassMixinDefinitionNodeException('Invalid Mixin', $this);
     }

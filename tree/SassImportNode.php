@@ -73,9 +73,9 @@ class SassImportNode extends SassNode {
               $tree->addChild(new SassString("@import url('$subfile');\n"));
             }
             else {
+              $this->parser->filename = $subfile;
               $subtree = SassFile::get_tree($subfile, $this->parser);
               foreach($subtree->getChildren() as $child) {
-                $child->token->filename = $subfile;
                 $tree->addChild($child);
               }
             }
@@ -93,6 +93,8 @@ class SassImportNode extends SassNode {
           }
         }
     }
+    // print_r($tree);
+    // print_r($imported);die;
     return $imported;
   }
 }

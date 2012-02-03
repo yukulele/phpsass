@@ -717,10 +717,12 @@ class SassParser {
         case self::DOUBLE_QUOTE:
         case self::SINGLE_QUOTE:
           $statement .= $c;
-          while ($this->source[$srcpos] !== $c) {
+          while (isset($this->source[$srcpos]) && $this->source[$srcpos] !== $c) {
             $statement .= $this->source[$srcpos++];
           }
-          $statement .= $this->source[$srcpos++];
+          if (isset($this->source[$srcpos+1])) {
+            $statement .= $this->source[$srcpos++];
+          }
           break;
         case self::BEGIN_INTERPOLATION:
           $statement .= $c;

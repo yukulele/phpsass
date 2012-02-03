@@ -40,13 +40,13 @@ class SassFunctionDefinitionNode extends SassNode {
    * @return SassFunctionDefinitionNode
    */
   public function __construct($token) {
-    if ($token->level !== 0) {
-      throw new SassFunctionDefinitionNodeException('Functions can only be defined at root level', $this);
-    }
+    // if ($token->level !== 0) {
+    //   throw new SassFunctionDefinitionNodeException('Functions can only be defined at root level', $token);
+    // }
     parent::__construct($token);
     preg_match(self::MATCH, $token->source, $matches);
     if (empty($matches)) {
-      throw new SassFunctionDefinitionNodeException('Invalid Function', $this);
+      throw new SassFunctionDefinitionNodeException('Invalid Function', $token);
     }
     $this->name = $matches[self::NAME];
     $this->name = preg_replace('/[^a-z0-9_]/', '_', strtolower($this->name));
