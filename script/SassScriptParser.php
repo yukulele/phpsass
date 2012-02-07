@@ -72,16 +72,6 @@ class SassScriptParser {
       }
       $matches[1][$i] = $val;
     }
-
-    if (preg_match(SassScriptFunction::MATCH_FUNC, $string, $match)) {
-      $args = array();
-      foreach (SassScriptFunction::extractArgs($match[SassScriptFunction::ARGS]) as $expression) {
-        $args[] = $this->evaluate($expression, $context);
-      }
-      $func = new SassScriptFunction($match[SassScriptFunction::NAME], $args);
-      $matches[0][] = $match[0];
-      $matches[1][] = $func->perform();
-    }
     return str_replace($matches[0], $matches[1], $string);
   }
 
