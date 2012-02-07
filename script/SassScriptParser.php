@@ -58,19 +58,29 @@ class SassScriptParser {
   public function interpolate($string, $context) {
     for ($i = 0, $n = preg_match_all(self::MATCH_INTERPOLATION, $string, $matches); $i < $n; $i++) {
       $var = $this->evaluate($matches[1][$i], $context)->toString();
-            if(preg_match('/^unquote\((["\'])(.*)\1\)$/', $var, $match)){
-                $val = $match[2];
-            }
-            else if($var == '""'){
-                $val = "";
-            }
-            else if(preg_match('/^(["\'])(.*)\1$/', $var, $match)){
-                $val = $match[2];
-            }
-            else {
-                $val = $var;
-            }
-            $matches[1][$i] = $val;
+      if(preg_match('/^unquote\((["\'])(.*)\1\)$/', $var, $match)){
+          $val = $match[2];
+      }
+      else if($var == '""'){
+          $val = "";
+      }
+      else if(preg_match('/^(["\'])(.*)\1$/', $var, $match)){
+          $val = $match[2];
+      }
+      else {
+          $val = $var;
+      }
+      $matches[1][$i] = $val;
+    }
+
+    if (preg_match(SassScriptFunction::MATCH_FUNC, $string, $match)) {
+      $args = array();
+      foreach (SassScriptFunction::extractArgs($match[SassScriptFunction::ARGS]) as $expression) {
+        $args[] = $this->evaluate($expression, $context);
+      }
+      $func = new SassScriptFunction($match[SassScriptFunction::NAME], $args);
+      $matches[0][] = $match[0];
+      $matches[1][] = $func->perform();
     }
     return str_replace($matches[0], $matches[1], $string);
   }
