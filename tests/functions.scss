@@ -1,0 +1,7 @@
+@function test() {
+	@return 'foo, bar, foo + bar';
+}
+
+#{test()} {
+	color: blue;
+}
