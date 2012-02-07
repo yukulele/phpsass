@@ -17,7 +17,7 @@
  */
 class SassCommentNode extends SassNode {
   const NODE_IDENTIFIER = '/';
-  const MATCH = '%^/\*\s*(.*?)\s*(\*/)?$%s';
+  const MATCH = '%^/\*\s*?(.*?)\s*?(\*/)?$%s';
   const COMMENT = 1;
 
   private $value;

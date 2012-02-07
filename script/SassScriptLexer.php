@@ -54,7 +54,6 @@ class SassScriptLexer {
    * @return array tokens
    */
   public function lex($string, $context) {
-    $tokens = array();
     while ($string !== false) {
       if (($match = $this->isWhitespace($string)) !== false) {
         $tokens[] = null;

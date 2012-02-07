@@ -523,8 +523,8 @@ class SassScriptFunctions {
     $w1 = ((($w * $a == -1) ? $w : ($w + $a)/(1 + $w * $a)) + 1) / 2;
     $w2 = 1 - $w1;
 
-    $rgb1 = $colour1->rgb();
-    $rgb2 = $colour2->rgb();
+    $rgb1 = $colour1->getRgb();
+    $rgb2 = $colour2->getRgb();
     $rgba = array();
     foreach ($rgb1 as $key=>$value) {
       $rgba[$key] = $value * $w1 + $rgb2[$key] * $w2;

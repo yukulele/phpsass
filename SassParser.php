@@ -94,14 +94,6 @@ class SassParser {
   public $debug_info;
 
   /**
-   * extensions:
-   * @var array Sass extensions, e.g. Compass. An associative array of the form
-   * $name => $options where $name is the name of the extension and $options
-   * is an array of name=>value options pairs.
-   */
-  public $extensions;
-
-  /**
    * filename:
    * @var string The filename of the file being rendered.
    * This is used solely for reporting errors.
@@ -820,7 +812,7 @@ class SassParser {
         if ($this->syntax == SassFile::SASS) {
           $i = 0;
           $source = '';
-          while (!empty($this->source) && empty($source) && isset($this->source[$i + 1])) {
+          while (sizeof($this->source) > $i && empty($source) && isset($this->source[$i + 1])) {
             $source = $this->source[$i++];
           }
           if (!empty($source) && $this->getLevel($source) > $token->level) {

@@ -18,7 +18,7 @@
 class SassImportNode extends SassNode {
   const IDENTIFIER = '@';
   const MATCH = '/^@import\s+(.+)/i';
-  const MATCH_CSS = '/^(.+\.css|url\(.+\)|.+" \w+|"http)/im';
+  const MATCH_CSS = '/^(.+\.css|(url)\((.+)\)|.+" \w+|"http)/im';
   const FILES = 1;
 
   /**
@@ -50,8 +50,13 @@ class SassImportNode extends SassNode {
   public function parse($context) {
     $imported = array();
     foreach ($this->files as $file) {
-        if (preg_match(self::MATCH_CSS, $file)) {
-          return array(new SassString("@import url('$file');\n"));
+        if (preg_match(self::MATCH_CSS, $file, $matches)) {
+          if (isset($matches[2]) && $matches[2] == 'url') {
+            $file = $matches[1];
+          } else {
+            $file = "url ('$file')";
+          }
+          return array(new SassString("@import $file;\n"));
         }
         $file = trim($file, '\'"');
         $files = SassFile::get_file($file, $this->parser);

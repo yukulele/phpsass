@@ -56,7 +56,8 @@ class SassFile {
 
   public static function get_file_contents($filename, $parser) {
     $contents = file_get_contents($filename) . "\n\n "; #add some whitespace to fix bug
-    $contents = preg_replace("/\/\/[^\n]+/", '', $contents);
+    # strip // comments at this stage, with allowances for http:// style locations.
+    $contents = preg_replace("/(^|\s)\/\/[^\n]+/", '', $contents);
     // SassFile::$parser = $parser;
     // SassFile::$path = $filename;
     // $contents = preg_replace_callback('/url\(\s*[\'"]?(?![a-z]+:|\/+)([^\'")]+)[\'"]?\s*\)/i', 'SassFile::resolve_paths', $contents);
