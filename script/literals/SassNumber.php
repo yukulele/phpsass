@@ -79,6 +79,9 @@ class SassNumber extends SassLiteral {
    */
   public function __construct($value) {
     preg_match(self::MATCH, $value, $matches);
+
+    $matches += array(null,null,'','');
+
     $this->value = $matches[self::VALUE];
     if (!empty($matches[self::UNITS])) {
       $units = explode('/', $matches[self::UNITS]);

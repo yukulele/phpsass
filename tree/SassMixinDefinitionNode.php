@@ -55,7 +55,6 @@ class SassMixinDefinitionNode extends SassNode {
         $this->args[substr(trim($arg[0]), 1)] = (count($arg) == 2 ? trim($arg[1]) : null);
       }
     }
-    // print $token->filename . ' ' . $this->name . " \n";
   }
 
   /**
