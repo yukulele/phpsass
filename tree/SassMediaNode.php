@@ -17,7 +17,7 @@
  */
 class SassMediaNode extends SassNode {
   const IDENTIFIER = '@';
-  const MATCH = '/^@(?:media)\s+(.+?)\s*;?$/';
+  const MATCH = '/^@(media)\s+(.+?)\s*;?$/';
   const MEDIA = 1;
 
 
@@ -47,7 +47,7 @@ class SassMediaNode extends SassNode {
    * @param array parameters for the message
    * @return SassMediaNode
    */
-  public function __construct($token, $message = false) {
+  public function __construct($token) {
     parent::__construct($token);
 
     preg_match(self::MATCH, $token->source, $matches);
@@ -61,12 +61,20 @@ class SassMediaNode extends SassNode {
    * @return array An empty array
    */
   public function parse($context) {
-    $node = new SassRuleNode($this->token);
+    $node = new SassRuleNode($this->token, $context);
     $node->root = $this->parent->root;
 
     $rule = clone $this->parent;
     $rule->root = $node->root;
     $rule->children = $this->children;
+    
+    $try = $rule->parse($context);
+    if (is_array($try)) {
+      $rule->children = $try;
+    } else if (is_object($try) && method_exists($try, 'render')) {
+      $rule = $try;
+    }
+
     $node->children = array(new SassString($rule->render()));
 
     return array($node);

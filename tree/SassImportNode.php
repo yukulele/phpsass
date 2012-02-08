@@ -60,7 +60,6 @@ class SassImportNode extends SassNode {
         }
         $file = trim($file, '\'"');
         $files = SassFile::get_file($file, $this->parser);
-
         $tree = array();
         if ($files) {
           if ($this->token->level > 0) {
