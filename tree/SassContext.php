@@ -114,7 +114,7 @@ class SassContext {
    * @param string name of function to return
    * @return SassFunctionDefinitionNode the mixin
    * @throws SassContextException if function not defined in this context
-   */  
+   */
   public function getFunction($name) {
     if ($fn = $this->hasFunction($name)) {
       return $fn;

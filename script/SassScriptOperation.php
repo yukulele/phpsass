@@ -125,6 +125,15 @@ class SassScriptOperation {
       return $operands;
     }
 
+    // fix a bug of unknown origin
+    foreach ($operands as $i => $op) {
+      if (!is_object($op)) {
+        $operands[] = null;
+        unset ($operands[$i]);
+      }
+    }
+    $operands = array_values($operands);
+
     if (count($operands) > 1 && is_null($operands[1])) {
       $operation = 'op_unary_' . $this->operator;
     }

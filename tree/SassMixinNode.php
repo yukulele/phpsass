@@ -62,9 +62,10 @@ class SassMixinNode extends SassNode {
     $context->content = $this->children;
     $argc = count($this->args);
     $count = 0;
+
     foreach ($mixin->args as $name=>$value) {
       if ($count < $argc) {
-        $result = $this->evaluate($this->args[$count++], $context);
+        $result = $this->evaluate($this->args[$count++], $pcontext);
       }
       elseif (!is_null($value)) {
         $result = $this->evaluate($value, $context);

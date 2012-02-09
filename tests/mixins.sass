@@ -1,5 +1,13 @@
 $yellow: #fc0
 
+/* test that variable context evaluates correctly */
+=foo($var, $val)
+  :#{$var} $val
+=bar($var)
+  +foo(one, $var)
+test
+  +bar(two)
+
 =bordered
   :border
     :top

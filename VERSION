@@ -1,2 +1,3 @@
+Version 201202092300 - fix to @mixins calling @mixins involving variable-name collisions, minor fix to interpolation fail
 Version 201202081100 - fix to @media contexts
 Version 201202072300 - first version with versions!

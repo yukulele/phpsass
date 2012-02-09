@@ -1,3 +1,6 @@
+test {
+  one: two
+}
 #main {
   width: 15em;
   color: blue;
