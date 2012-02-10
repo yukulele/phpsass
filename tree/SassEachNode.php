@@ -101,6 +101,7 @@ class SassEachNode extends SassNode {
 
   private function parse_in($string) {
     $current = '';
+    $char = '';
     $in_brace = FALSE;
     $list = array();
 
@@ -109,10 +110,14 @@ class SassEachNode extends SassNode {
     }
 
     for ($i = 0; $i < strlen($string); $i++) {
+      $last = $char;
       $char = $string{$i};
 
       if ($in_brace) {
         if ($char == ')') {
+          if ($in_brace > 1) {
+            $current .= $char;
+          }
           $list[] = trim($current);
           if (strlen($string) < $i +1 && $string{$i + 1} == ',') {
             $i++; # skip the comma
@@ -127,7 +132,10 @@ class SassEachNode extends SassNode {
       }
 
       if ($char == '(') {
-        $in_brace = TRUE;
+        $in_brace = (ctype_alpha($last)) ? 2 : 1;
+        if ($in_brace > 1) {
+          $current .= $char;
+        }
         continue;
       }
 
