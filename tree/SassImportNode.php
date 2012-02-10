@@ -18,7 +18,7 @@
 class SassImportNode extends SassNode {
   const IDENTIFIER = '@';
   const MATCH = '/^@import\s+(.+)/i';
-  const MATCH_CSS = '/^(.+\.css|(url)\((.+)\)|.+" \w+|"http)/im';
+  const MATCH_CSS = '/^((url)\((.+)\)|.+" \w+|"http|.+\.css)/im';
   const FILES = 1;
 
   /**
@@ -54,7 +54,7 @@ class SassImportNode extends SassNode {
           if (isset($matches[2]) && $matches[2] == 'url') {
             $file = $matches[1];
           } else {
-            $file = "url ('$file')";
+            $file = "url('$file')";
           }
           return array(new SassString("@import $file;\n"));
         }
