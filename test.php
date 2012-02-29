@@ -32,24 +32,24 @@
     $test_dir = './tests';
 
     $files = find_files($test_dir);
-
+  
     $i = 0;
 
     foreach ($files['by_name'] as $name => $test) {
       if (isset($_GET['name']) && $name != $_GET['name']) {
         continue;
       }
-      if (isset($_GET['skip']) && $name && strpos($_GET['skip'], $name) !== FALSE) {
+      if (isset($_GET['skip']) && $name && preg_match('/(^|,)(' . preg_quote($name) . ')(,|$)/', $_GET['skip'])) {
         continue;
       }
       if (count($test) > 1) {
         $result = test_files($test, $test_dir);
 
         if ($result === TRUE) {
-          print "<p class='pass'><em>PASS</em> $name</p>";
+          print "\n\t<p class='pass'><em>PASS</em> $name</p>";
         }
         else {
-          print "<p class='fail'><em>FAIL</em> $name</p>";
+          print "\n\t<p class='fail'><em>FAIL</em> $name</p>";
           foreach ($result as $name => $set) {
             $names = array_keys($set);
             $one = trim(current(array_pop($set)));

@@ -45,8 +45,8 @@ class SassScriptFunction {
   private function process_arguments($input) {
     if (is_array($input)) {
       $output = array();
-      foreach ($input as $token) {
-        $output[] = trim($this->process_arguments($token), '\'"');
+      foreach ($input as $k => $token) {
+        $output[$k] = trim($this->process_arguments($token), '\'"');
       }
       return $output;
     }
@@ -77,18 +77,23 @@ class SassScriptFunction {
    * @return Function the value of this Function
    */
   public function perform() {
-    self::$context = SassScriptParser::$context;
+    self::$context = new SassContext(SassScriptParser::$context);
 
     $name = preg_replace('/[^a-z0-9_]/', '_', strtolower($this->name));
     $args = $this->process_arguments($this->args);
 
+    foreach ($this->args as $k => $v) {
+      if (!is_numeric($k)) {
+        self::$context->setVariable($k, $v);
+      }
+    }
 
     try {
-      if ($fn = SassScriptParser::$context->hasFunction($this->name)) {
+      if (SassScriptParser::$context->hasFunction($this->name)) {
         $return = SassScriptParser::$context->getFunction($this->name)->execute(SassScriptParser::$context, $this->args);
         return $return;
       }
-      else if ($fn = SassScriptParser::$context->hasFunction($name)) {
+      else if (SassScriptParser::$context->hasFunction($name)) {
         $return = SassScriptParser::$context->getFunction($name)->execute(SassScriptParser::$context, $this->args);
         return $return;
       }
@@ -114,6 +119,9 @@ class SassScriptFunction {
 
     if (method_exists('SassScriptFunctions', $name)) {
       return call_user_func_array(array('SassScriptFunctions', $name), $this->args);
+    }
+    if (method_exists('SassScriptFunctions', '_' . $name)) {
+      return call_user_func_array(array('SassScriptFunctions', '_' . $name), $this->args);
     }
 
     foreach ($this->args as $i => $arg) {
@@ -180,41 +188,60 @@ class SassScriptFunction {
     $strpos = 0;
     $strlen = strlen($string);
 
-    while ($strpos < $strlen) {
-      $c = $string[$strpos++];
+    $list = SassList::_build_list($string, ',');
+    $return = array();
 
-      switch ($c) {
-        case '(':
-          $paren += 1;
-          $arg .= $c;
-          break;
-        case ')':
-          $paren -= 1;
-          $arg .= $c;
-          break;
-        case '"':
-        case "'":
-          $arg .= $c;
-          do {
-            $_c = $string[$strpos++];
-            $arg .= $_c;
-          } while ($_c !== $c);
-          break;
-        case ',':
-          if ($paren) {
-            $arg .= $c;
-            break;
-          }
-          $args[] = trim($arg);
-          $arg = '';
-          break;
-        default:
-          $arg .= $c;
-          break;
+    foreach ($list as $k => $value) {
+      if (strpos($value, ':') !== false && preg_match(SassVariableNode::MATCH, $value, $match)) {
+        $return[$match[SassVariableNode::NAME]] = $match[SassVariableNode::VALUE];
+      } else {
+        $return[$k] = $value;
       }
     }
 
-    if ($arg!='') $args[] = trim($arg);
-    return $args;
+    return $return;
+  }
+
+  public static function get_reflection($method) {
+    if (is_array($method)) {
+      $class = new ReflectionClass($method[0]);
+      $function = $class->getMethod($method[1]);
+    }
+    else {
+      $function = new ReflectionFunction($method);
+    }
+
+    $return = array();
+    foreach ($function->getParameters() as $parameter) {
+      $default = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : NULL;
+      $return[$parameter->getName()] = $default;
+    }
+  }
+
+  public static function fill_parameters($required, $provided, $context, $source) {
+    $context = new SassContext($context);
+    foreach ($required as $name=>$default) {
+      // we require that named variables provide a default.
+      if (isset($provided[$name]) && $default !== null) {
+        $context->setVariable($name, $provided[$name]);
+        unset($provided[$name]);
+        unset($required[$name]);
+      }
+    }
+
+    foreach ($required as $name=>$default) {
+      if (count($provided)) {
+        $arg = SassScriptParser::$instance->evaluate(array_shift($provided), $context);
+      }
+      elseif (!is_null($default)) {
+        $arg = $default;
+      }
+      else {
+        throw new SassMixinNodeException("Function::$name: Required variable ($name) not given.\nFunction defined: ' . $source->token->filename . '::' . $source->token->line . '\nFunction used", $source);
+      }
+      $context->setVariable($name, $arg);
+    }
+
+    return $context;
   }
 }

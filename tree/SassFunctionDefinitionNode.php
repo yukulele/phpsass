@@ -88,27 +88,17 @@ class SassFunctionDefinitionNode extends SassNode {
     return $token->source[0] === self::NODE_IDENTIFIER;
   }
 
-  public function execute($pcontext, $arguments) {
-    $context = new SassContext($pcontext);
-    $argc = count($arguments);
-    $count = 0;
-    foreach ($this->args as $name=>$value) {
-      if ($count < $argc) {
-        $arg = $this->evaluate($arguments[$count++], $context);
-        $arguments[$name] = $arg;
-        $context->setVariable($name, $arg);
-      }
-      elseif (!is_null($value)) {
-        $arguments[$name] = $value;
-        $context->setVariable($name, $this->evaluate($value, $context));
-      }
-      else {
-        throw new SassMixinNodeException("Function::$name: Required variable ($name) not given.\nFunction defined: ' . $this->token->filename . '::' . $this->token->line . '\nFunction used", $this);
-      }
-    }
+  /**
+   * Evalutes the function in the given context, with the provided arguments
+   * @param SassContext - the parent context
+   * @param array - the list of provided variables
+   * @throws SassReturn - if the @return is fired then this is thrown to break early
+   * @return SassBoolean(false) - if no @return was fired, return false
+   */
+  public function execute($pcontext, $provided) {
+    $context = SassScriptFunction::fill_parameters($this->args, $provided, $pcontext, $this);
 
     $parser = $this->parent->parser;
-    $lexer = $this->parent->script->lexer;
 
     $children = array();
     try {

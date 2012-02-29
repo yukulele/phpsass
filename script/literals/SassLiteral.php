@@ -27,7 +27,8 @@ abstract class SassLiteral {
     'SassBoolean' => 'bool',
     'SassColour'  => 'color',
     'SassNumber'  => 'number',
-    'SassString'  => 'string'
+    'SassString'  => 'string',
+    'SassList' => 'list'
   );
 
   /**
