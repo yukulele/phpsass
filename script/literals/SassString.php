@@ -102,6 +102,13 @@ class SassString extends SassLiteral {
     return SassScriptParser::$context->getVariable($this->value);
   }
 
+  public function getTypeOf() {
+    if (SassList::isa($this->toString())) {
+      return 'list';
+    }
+    return 'string';
+  }
+
   /**
    * Returns a value indicating if a token of this type can be matched at
    * the start of the subject string.

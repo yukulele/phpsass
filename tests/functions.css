@@ -1,2 +1,5 @@
 foo, bar, foo + bar {
-  color: blue; }
+  color: blue;
+  named: foobar;
+  unnamed: barfoo;
+}

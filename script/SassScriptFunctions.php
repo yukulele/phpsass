@@ -745,23 +745,44 @@ class SassScriptFunctions {
   /**
    * List Functions - taken mostly from Compass
    */
+
+   /**
+    * Returns the length of the $list
+    * @param SassList - the list to count
+    * @return SassNumber
+    */
   public static function length($list) {
-    return count($list);
+    if ($list instanceOf SassString) {
+      $list = new SassList($list->value);
+    }
+
+    return new SassNumber($list->length());
   }
+
+  /**
+   * Returns the nth value ofthe $list
+   * @param SassList - the list to get from
+   * @param SassNumber - the value to get
+   * @return anything
+   */
   public static function nth($list, $n) {
-    return $list[$n];
+    SassLiteral::assertType($n, 'SassNumber');
+
+    if ($list instanceof SassString) {
+      $list = new SassList($list->value);
+    }
+
+    return $list->nth($n->value);
   }
   public static function join($one, $two, $sep = ', ') {
     return self::append($one, $two, $sep);
   }
-  public static function append($list, $val, $sep = ',') {
-    $string = is_object($sep) ? $sep->value : $sep;
-    $aliases = array('comma' => ',', 'space' => ' ', 'tab' => "\t");
-    if (isset($aliases[$string])) {
-      $string = $aliases[$string];
-    }
 
-    $list->value = trim($list->value . $string . $val->value, $string);
+  public static function append($list, $val, $sep = ', ') {
+    if ($list instanceOf SassString) {
+      $list = new SassList($list->value);
+    }
+    $list->append($val, $sep);
     return $list;
   }
 
@@ -769,6 +790,17 @@ class SassScriptFunctions {
   /*
    * Misc. Functions
    */
+
+  /**
+   * An inline "if-else" statement.
+   * @param SassBoolean condition - values are loosely-evaulated by PHP, so
+   *                                'false' includes null, false, 0, ''
+   * @param anything - returns if Condition is true
+   * @param anything - returns if Condition is false
+   */
+  public static function _if($condition, $if_true, $if_false) {
+    return ($condition->value ? $if_true : $if_false);
+  }
 
   /**
    * Inspects the type of the argument, returning it as an unquoted string.

@@ -13,6 +13,7 @@ require_once('literals/SassBoolean.php');
 require_once('literals/SassColour.php');
 require_once('literals/SassNumber.php');
 require_once('literals/SassString.php');
+require_once('literals/SassList.php');
 require_once('SassScriptFunction.php');
 require_once('SassScriptOperation.php');
 require_once('SassScriptVariable.php');
@@ -54,6 +55,14 @@ class SassScriptLexer {
    * @return array tokens
    */
   public function lex($string, $context) {
+    // if it's already lexed, just return it as-is
+    if (is_object($string)) {
+      return array($string);
+    }
+    if (is_array($string)) {
+      return $string;
+    }
+    // whilst the string is not empty, split it into it's tokens.
     while ($string !== false) {
       if (($match = $this->isWhitespace($string)) !== false) {
         $tokens[] = null;
@@ -61,8 +70,8 @@ class SassScriptLexer {
       elseif (($match = SassScriptFunction::isa($string)) !== false) {
         preg_match(SassScriptFunction::MATCH_FUNC, $match, $matches);
         $args = array();
-        foreach (SassScriptFunction::extractArgs($matches[SassScriptFunction::ARGS]) as $expression) {
-          $args[] = $this->parser->evaluate($expression, $context);
+        foreach (SassScriptFunction::extractArgs($matches[SassScriptFunction::ARGS]) as $key => $expression) {
+          $args[$key] = $this->parser->evaluate($expression, $context);
         }
         $tokens[] = new SassScriptFunction($matches[SassScriptFunction::NAME], $args);
       }
@@ -76,7 +85,12 @@ class SassScriptLexer {
         $tokens[] = new SassNumber($match);
       }
       elseif (($match = SassString::isa($string)) !== false) {
-        $tokens[] = new SassString($match);
+        $stringed = new SassString($match);
+        if (strlen($stringed->quote) == 0 && SassList::isa($string) !== false) {
+          $tokens[] = new SassList($string);
+        } else {
+          $tokens[] = $stringed;
+        }
       }
       elseif (($match = SassScriptOperation::isa($string)) !== false) {
         $tokens[] = new SassScriptOperation($match);
