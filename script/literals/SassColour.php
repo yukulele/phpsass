@@ -605,14 +605,21 @@ class SassColour extends SassLiteral {
         'alpha' => $this->alpha
         ), $attributes);
     }
-    return new SassColour($colour);
+
+
+    $colour = new SassColour($colour);
+    $colour->getRed(); # will get RGB and HSL
+    return $colour;
   }
 
   /**
    * Returns the alpha component (opacity) of this colour.
    * @return float the alpha component (opacity) of this colour.
    */
-  public function getAlpha() {
+  public function getAlpha($value = false) {
+    if ($value && isset($this->alpha->$value)) {
+      return $this->alpha->value;
+    }
     return $this->alpha;
   }
 
@@ -620,9 +627,12 @@ class SassColour extends SassLiteral {
    * Returns the hue of this colour.
    * @return float the hue of this colour.
    */
-  public function getHue() {
+  public function getHue($value = false) {
     if (is_null($this->hue)) {
       $this->rgb2hsl();
+    }
+    if ($value && isset($this->hue->value)) {
+      return $this->hue->value;
     }
     return $this->hue;
   }
@@ -631,9 +641,12 @@ class SassColour extends SassLiteral {
    * Returns the saturation of this colour.
    * @return float the saturation of this colour.
    */
-  public function getSaturation() {
+  public function getSaturation($value = false) {
     if (is_null($this->saturation)) {
       $this->rgb2hsl();
+    }
+    if ($value && isset($this->saturation->value)) {
+      return $this->saturation->value;
     }
     return $this->saturation;
   }
@@ -642,9 +655,12 @@ class SassColour extends SassLiteral {
    * Returns the lightness of this colour.
    * @return float the lightness of this colour.
    */
-  public function getLightness() {
+  public function getLightness($value = false) {
     if (is_null($this->lightness)) {
       $this->rgb2hsl();
+    }
+    if ($value && isset($this->lightness->value)) {
+      return $this->lightness->value;
     }
     return $this->lightness;
   }
@@ -653,9 +669,12 @@ class SassColour extends SassLiteral {
    * Returns the blue component of this colour.
    * @return integer the blue component of this colour.
    */
-  public function getBlue() {
+  public function getBlue($value = false) {
     if (is_null($this->blue)) {
       $this->hsl2rgb();
+    }
+    if ($value && isset($this->blue->value)) {
+      return $this->blue->value;
     }
     return max(0, min(255, round($this->blue)));
   }
@@ -664,9 +683,12 @@ class SassColour extends SassLiteral {
    * Returns the green component of this colour.
    * @return integer the green component of this colour.
    */
-  public function getGreen() {
+  public function getGreen($value = false) {
     if (is_null($this->green)) {
       $this->hsl2rgb();
+    }
+    if ($value && isset($this->green->value)) {
+      return $this->green->value;
     }
     return max(0, min(255, round($this->green)));
   }
@@ -675,9 +697,12 @@ class SassColour extends SassLiteral {
    * Returns the red component of this colour.
    * @return integer the red component of this colour.
    */
-  public function getRed() {
+  public function getRed($value = false) {
     if (is_null($this->red)) {
       $this->hsl2rgb();
+    }
+    if ($value && isset($this->red->value)) {
+      return $this->red->value;
     }
     return max(0, min(255, round($this->red)));
   }
@@ -736,20 +761,27 @@ class SassColour extends SassLiteral {
    * @param boolean whether to use CSS3 SVG1.0 colour names
     * @return string the colour as a named colour, rgba(r,g,g,a) or #rrggbb
    */
-  public function toString($css3 = false) {
-    $rgba = $this->rgba;
+  public function toString($css3 = true) {
+    $rgba = $this->getRgba();
+
+    foreach ($rgba as $k => $v) {
+      if (is_object($v)) {
+        $rgba[$k] = $v->value;
+      }
+    }
 
     if ($rgba[3] == 0) {
       return 'transparent';
     }
     elseif ($rgba[3] < 1) {
-      return sprintf('rgba(%d, %d, %d, %1.2f)', $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
+      $rgba[3] = round($rgba[3], 2);
+      return sprintf('rgba(%d, %d, %d, %s)', $rgba[0], $rgba[1], $rgba[2], $rgba[3]);
     }
     else {
-      $colour = sprintf('#%02x%02x%02x', $rgba[0], $rgba[1], $rgba[2]);
+      $colour = sprintf('#%02x%02x%02x', round($rgba[0]), round($rgba[1]), round($rgba[2]));
     }
 
-    if (true || $css3) {
+    if ($css3) {
       if (empty(self::$_svgColours)) {
         self::$_svgColours = array_flip(self::$svgColours);
       }
@@ -761,10 +793,7 @@ class SassColour extends SassLiteral {
   }
 
   public function asHex($inc_hash = TRUE) {
-    $red = str_pad(dechex($this->red),   2, '0', STR_PAD_LEFT);
-    $grn = str_pad(dechex($this->green), 2, '0', STR_PAD_LEFT);
-    $blu = str_pad(dechex($this->blue),  2, '0', STR_PAD_LEFT);
-    return ($inc_hash ? '#' : '') . $red . $grn . $blu;
+    return sprintf(($inc_hash ? '#' : '') . '%02x%02x%02x', round($this->red), round($this->green), round($this->blue));
   }
 
   /**
@@ -773,72 +802,70 @@ class SassColour extends SassLiteral {
    * @uses hue2rgb()
    */
   public function hsl2rgb() {
-    $h = $this->hue/360;
-    $s = $this->saturation/100;
-    $l = $this->lightness/100;
+    $h = $this->getHue(true) / 360;
+    $s = $this->getSaturation(true) / 100;
+    $l = $this->getLightness(true) / 100;
 
-    $m1 = ($l <= 0.5 ? $l * ($s + 1) : $l + $s - $l * $s);
-    $m2 = $l * 2 - $m1;
+    $q = $l < 0.5 ? $l * (1 + $s)
+                  : $l + $s - $l * $s;
+    $p = 2 * $l - $q;
 
-    $this->red   = $this->hue2rgb($m1, $m2, $h + 1/3);
-    $this->green = $this->hue2rgb($m1, $m2, $h);
-    $this->blue  = $this->hue2rgb($m1, $m2, $h - 1/3);
+    $this->red   = $this->hue2rgb($p, $q, $h + 1/3);
+    $this->green = $this->hue2rgb($p, $q, $h);
+    $this->blue  = $this->hue2rgb($p, $q, $h - 1/3);
   }
 
   /**
    * Converts from hue to RGB colourspace
    */
-  public function hue2rgb($m1, $m2, $h) {
-    $h += ($h < 0 ? 1 : ($h > 1 ? -1 : 0));
+  public function hue2rgb($p, $q, $t) {
+    if ($t < 0)
+      $t += 1;
+    if ($t > 1)
+      $t -= 1;
 
-    if ($h * 6 < 1) {
-      $c = $m2 + ($m1 - $m2) * $h * 6;
-    }
-    elseif ($h * 2 < 1) {
-      $c = $m1;
-    }
-    elseif ($h * 3 < 2) {
-      $c = $m2 + ($m1 - $m2) * (2/3 - $h) * 6;
-    }
-    else {
-      $c = $m2;
-    }
-    return $c * 255;
+    if ($t < 1/6)
+      $p = $p + ($q - $p) * 6 * $t;
+    else if ($t < 1/2)
+      $p = $q;
+    else if ($t < 2/3)
+      $p = $p + ($q - $p) * (2/3 - $t) * 6;
+
+    return round($p * 255);
   }
 
   /**
    * Converts from RGB to HSL colourspace
-   * Algorithm adapted from {@link http://en.wikipedia.org/wiki/HSL_and_HSV#Conversion_from_RGB_to_HSL_or_HSV}
+   * Algorithm adapted from {@link http://mjijackson.com/2008/02/rgb-to-hsl-and-rgb-to-hsv-color-model-conversion-algorithms-in-javascript}
    */
   public function rgb2hsl() {
-    $rgb = array($this->red/255, $this->green/255, $this->blue/255);
-    $max = max($rgb);
-    $min = min($rgb);
-    $c = $max - $min;
+    list($r, $g, $b) = array($this->red / 255, $this->green / 255, $this->blue / 255);
 
-    // Lightness
-    $l = ($max + $min)/2;
-    $this->lightness = $l * 100;
+    $max = max($r, $g, $b);
+    $min = min($r, $g, $b);
+    $d = $max - $min;
 
-    // Saturation
-    $this->saturation = ($c ? ($l <= 0.5 ? $c/(2 * $l) : $c/(2 - 2 * $l)) : 0 ) * 100;
-
-    // Hue
-    switch($max) {
-      case $min:
-        $h = 0;
-        break;
-      case $rgb[0]:
-        $h = (60*($rgb[1] - $rgb[2])/$c);
-        break;
-      case $rgb[1]:
-        $h = (60*($rgb[2] - $rgb[0])/$c) + 120;
-        break;
-      case $rgb[2]:
-        $h = (60*($rgb[0] - $rgb[1])/$c) + 240;
-        break;
+    if ($max == $min) {
+      $h = 0;
+      $s = 0;
     }
-    $this->hue = fmod($h, 360);
+    else if ($max == $r)
+      $h = 60 * ($g - $b) / $d;
+    else if ($max == $g)
+      $h = 60 * ($b - $r) / $d + 120;
+    else if ($max == $b)
+      $h = 60 * ($r - $g) / $d + 240;
+
+    $l = ($max + $min) / 2;
+
+    $s = $l > 0.5 ? $d / (2 - $max - $min) : $d / ($max + $min);
+
+    while ($h > 360) $h -= 360;
+    while ($h < 0) $h += 360;
+
+    $this->hue = $h;
+    $this->saturation = $s * 100;
+    $this->lightness = $l * 100;
   }
 
   /**

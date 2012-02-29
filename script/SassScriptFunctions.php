@@ -139,6 +139,8 @@ class SassScriptFunctions {
    * @throws SassScriptFunctionException if saturation or lightness are out of bounds
    */
   public static function hsl($h, $s, $l) {
+    SassLiteral::assertInRange($s, 0, 100, '%');
+    SassLiteral::assertInRange($l, 0, 100, '%');
     return self::hsla($h, $s, $l, new SassNumber(1));
   }
 
@@ -212,7 +214,7 @@ class SassScriptFunctions {
    */
   public static function hue($colour) {
     SassLiteral::assertType($colour, 'SassColour');
-    return new SassNumber($colour->hue);
+    return new SassNumber($colour->getHue() . 'deg');
   }
 
   /**
@@ -223,7 +225,7 @@ class SassScriptFunctions {
    */
   public static function saturation($colour) {
     SassLiteral::assertType($colour, 'SassColour');
-    return new SassNumber($colour->saturation);
+    return new SassNumber($colour->getSaturation() . '%');
   }
 
   /**
@@ -234,7 +236,7 @@ class SassScriptFunctions {
    */
   public static function lightness($colour) {
     SassLiteral::assertType($colour, 'SassColour');
-    return new SassNumber($colour->lightness);
+    return new SassNumber($colour->getLightness() . '%');
   }
 
   /**
@@ -281,7 +283,7 @@ class SassScriptFunctions {
   public static function adjust_hue($colour, $degrees) {
     SassLiteral::assertType($colour, 'SassColour');
     SassLiteral::assertType($degrees, 'SassNumber');
-    return $colour->with(array('hue' => $colour->hue + $degrees->value));
+    return $colour->with(array('hue' => $colour->getHue(true) + $degrees->value));
   }
 
   /**
@@ -441,6 +443,7 @@ class SassScriptFunctions {
    * @uses adjust_hue()
    */
   public static function complement($colour) {
+    // return self::adjust($colour, new SassNumber('180deg'), true, 'hue', self::INCREASE, 0, 360, '');
     return self::adjust_hue($colour, new SassNumber('180deg'));
   }
 
@@ -463,6 +466,21 @@ class SassScriptFunctions {
    */
   public static function greyscale($colour) {
     return self::desaturate($colour, new SassNumber(100));
+  }
+
+  /**
+   * Inverts a colour.
+   * The red, green, and blue values are inverted value = (255 - value)
+   * @param SassColour: the colour
+   * @return new SassColour: the inverted colour
+   */
+  public static function invert($colour) {
+    SassLiteral::assertType($colour, 'SassColour');
+    return $colour->with(array(
+      'red' => 255 - $colour->getRed(true),
+      'blue' => 255 - $colour->getBlue(true),
+      'green' => 255 - $colour->getGreen(true)
+    ));
   }
 
   /**
@@ -548,7 +566,7 @@ class SassScriptFunctions {
   public static function adjust($colour, $amount, $ofCurrent, $att, $op, $min, $max, $units='') {
     SassLiteral::assertType($colour, 'SassColour');
     SassLiteral::assertType($amount, 'SassNumber');
-    SassLiteral::assertInRange($amount, $min, $max, $units);
+    // SassLiteral::assertInRange($amount, $min, $max, $units);
     if (!is_bool($ofCurrent)) {
       SassLiteral::assertType($ofCurrent, 'SassBoolean');
       $ofCurrent = $ofCurrent->value;
@@ -565,6 +583,7 @@ class SassScriptFunctions {
     else {
       $colour->rgb2hsl();
       $colour->$att = $ofCurrent ? $colour->$att * (1 + ($amount * ($op === self::INCREASE ? 1 : -1))/100) : $colour->$att + ($amount * ($op === self::INCREASE ? 1 : -1));
+      $colour->$att = max($min, min($max, $colour->$att));
       $colour->hsl2rgb();
     }
     return $colour;
