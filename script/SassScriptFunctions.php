@@ -504,13 +504,14 @@ class SassScriptFunctions {
    * @throws SassScriptFunctionException If $colour1 or $colour2 is
    * not a colour
    */
-  public static function mix($colour1, $colour2, $weight = null) {
-    if (is_null($weight)) $weight = new SassNumber('50%');
+  public static function mix($colour1, $colour2, $weight = '50%') {
+    if (is_object($weight)) {
+      $weight = new SassNumber($weight);
+    }
     SassLiteral::assertType($colour1, 'SassColour');
     SassLiteral::assertType($colour2, 'SassColour');
     SassLiteral::assertType($weight, 'SassNumber');
     SassLiteral::assertInRange($weight, 0, 100, '%');
-
     /*
      * This algorithm factors in both the user-provided weight
      * and the difference between the alpha values of the two colours
@@ -538,6 +539,7 @@ class SassScriptFunctions {
     $w = $p * 2 - 1;
     $a = $colour1->alpha - $colour2->alpha;
 
+
     $w1 = ((($w * $a == -1) ? $w : ($w + $a)/(1 + $w * $a)) + 1) / 2;
     $w2 = 1 - $w1;
 
@@ -545,10 +547,60 @@ class SassScriptFunctions {
     $rgb2 = $colour2->getRgb();
     $rgba = array();
     foreach ($rgb1 as $key=>$value) {
-      $rgba[$key] = $value * $w1 + $rgb2[$key] * $w2;
+      $rgba[$key] = floor(($value * $w1) + ($rgb2[$key] * $w2));
     } // foreach
-    $rgba[] = $colour1->alpha * $p + $colour2->alpha * (1 - $p);
+    $rgba[] = floor($colour1->alpha * $p + $colour2->alpha * (1 - $p));
+
     return new SassColour($rgba);
+  }
+
+  /**
+   * Adjusts one or more property of the color by the value requested.
+   * @param SassColour the colour to adjust
+   * @param SassNumber (red, green, blue, hue, saturation, lightness, alpha) - the amount(s) to adjust by
+   * @return SassColour
+   */
+  public static function adjust_color($color, $red = 0, $green = 0, $blue = 0, $hue = 0, $saturation = 0, $lightness = 0, $alpha = 0) {
+    foreach (array('red', 'green', 'blue', 'hue', 'saturation', 'lightness', 'alpha') as $property) {
+      $obj = $$property;
+      $color = self::adjust($color, $$property, FALSE, $property, self::INCREASE, 0, 255);
+    }
+
+    return $color;
+  }
+
+  /**
+   * Scales one or more property of the color by the percentage requested.
+   * @param SassColour the colour to adjust
+   * @param SassNumber (red, green, blue, hue, saturation, lightness, alpha) - the amount(s) to scale by
+   * @return SassColour
+   */
+  public static function scale_color($color, $red = 0, $green = 0, $blue = 0, $hue = 0, $saturation = 0, $lightness = 0, $alpha = 0) {
+    $color->rgb2hsl();
+    foreach (array('red', 'green', 'blue', 'hue', 'saturation', 'lightness', 'alpha') as $i => $property) {
+      $obj = $$property;
+      $new = $color->$property + $color->$property * (0.01 * $obj->value);
+      $color->$property = $new;
+    }
+    $color->hsl2rgb();
+    return $color;
+  }
+
+  /**
+   * Changes one or more properties of the color to the requested value
+   * @param SassColour - the color to change
+   * @param SassNumber (red, green, blue, hue, saturation, lightness, alpha) - the amounts to scale by
+   * @return SassColour
+   */
+  public static function change_color($color, $red = false, $green = false, $blue = false, $hue = false, $saturation = false, $lightness = false, $alpha = false) {
+    $attrs = array();
+    foreach (array('red', 'green', 'blue', 'hue', 'saturation', 'lightness', 'alpha') as $i => $property) {
+      $obj = $$property;
+      if ($obj instanceof SassNumber) {
+        $attrs[$property] = $obj->value;
+      }
+    }
+    return $color->with($attrs);
   }
 
   /**
@@ -772,9 +824,8 @@ class SassScriptFunctions {
     */
   public static function length($list) {
     if ($list instanceOf SassString) {
-      $list = new SassList($list->value);
+      $list = new SassList($list->toString());
     }
-
     return new SassNumber($list->length());
   }
 
@@ -788,18 +839,19 @@ class SassScriptFunctions {
     SassLiteral::assertType($n, 'SassNumber');
 
     if ($list instanceof SassString) {
-      $list = new SassList($list->value);
+      $list = new SassList($list->toString());
     }
 
     return $list->nth($n->value);
   }
+
   public static function join($one, $two, $sep = ', ') {
     return self::append($one, $two, $sep);
   }
 
   public static function append($list, $val, $sep = ', ') {
     if ($list instanceOf SassString) {
-      $list = new SassList($list->value);
+      $list = new SassList($list->toString());
     }
     $list->append($val, $sep);
     return $list;

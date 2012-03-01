@@ -32,7 +32,7 @@
     $test_dir = './tests';
 
     $files = find_files($test_dir);
-  
+
     $i = 0;
 
     foreach ($files['by_name'] as $name => $test) {
@@ -113,7 +113,7 @@
 
       $failures = array();
       foreach ($trimmed as $file_1 => $val_1) {
-        foreach ($trimmed as $file_2 => $val_2) {     
+        foreach ($trimmed as $file_2 => $val_2) {
           if ($file_1 != $file_2 && $val_1 != $val_2) {
             $names = array($file_1, $file_2);
             sort($names);
@@ -159,12 +159,12 @@
     }
 
     function cb_warn($message, $context) {
-      print "<p class='fail'>WARN : ";
+      print "<p class='warn'>WARN : ";
       print_r($message);
       print "</p>";
     }
     function cb_debug($message) {
-      print "<p class='fail'>DEBUG : ";
+      print "<p class='debug'>DEBUG : ";
       print_r($message);
       print "</p>";
     }

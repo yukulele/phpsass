@@ -2,4 +2,6 @@ foo, bar, foo + bar {
   color: blue;
   named: foobar;
   unnamed: barfoo;
+
+  adjust-color: #0000f0;
 }

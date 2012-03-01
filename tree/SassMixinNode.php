@@ -44,8 +44,8 @@ class SassMixinNode extends SassNode {
       throw new SassMixinNodeException('Invalid mixin invocation: ($token->source)', $this);
     }
     $this->name = $matches[self::NAME];
-    if (isset($matches[self::ARGS])) {
-      $this->args = SassScriptFunction::extractArgs($matches[self::ARGS]);
+    if (isset($matches[self::ARGS]) && strlen($matches[self::ARGS])) {
+      $this->args = SassScriptFunction::extractArgs($matches[self::ARGS], false);
     }
   }
 
@@ -63,20 +63,8 @@ class SassMixinNode extends SassNode {
     $argc = count($this->args);
     $count = 0;
 
-    foreach ($mixin->args as $name=>$value) {
-      if ($count < $argc) {
-        $result = $this->evaluate($this->args[$count++], $pcontext);
-      }
-      elseif (!is_null($value)) {
-        $result = $this->evaluate($value, $context);
-      }
-      if (isset($result)) {
-        $context->setVariable($name, $result);
-      }
-      else {
-        throw new SassMixinNodeException("Mixin::$name: Required variable ($this->name) not given.\nMixin defined: ". $mixin->token->filename . "::" . $mixin->token->line . "\nMixin used", $this);
-      }
-    }
+    list($arguments) = SassScriptFunction::fill_parameters($mixin->args, $this->args, $context, $this);
+    $context->setVariables($arguments);
 
     $children = array();
     foreach ($mixin->children as $child) {

@@ -25,10 +25,6 @@ require_once('SassFile.php');
 require_once('SassException.php');
 require_once('tree/SassNode.php');
 
-// $x = new ReflectionClass('SassScriptFunctions');
-// print_r($x->getMethod('rgb')->getParameters());
-// die;
-
 /**
  * SassParser class.
  * Parses {@link http://sass-lang.com/ .sass and .sccs} files.

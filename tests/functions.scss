@@ -16,4 +16,6 @@
 	color: blue;
 	named: named(bar, $one: foo);
 	unnamed: unnamed(bar, $one: foo);
+
+	adjust-color: adjust-color(#00F, $blue: -15);
 }

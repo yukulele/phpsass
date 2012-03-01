@@ -148,7 +148,18 @@ class SassScriptOperation {
         $op = clone $operands[0];
         return $op->$operation(!empty($operands[1]) ? $operands[1] : null);
     }
-    throw new SassScriptOperationException('Undefined operation "' . $operation . '" for ' . get_class($operands[0]), SassScriptParser::$context->node);
+
+    # avoid failures in case of null operands
+    $count = count($operands);
+    foreach ($operands as $i => $op) {
+      if (is_null($op)) {
+        $count--;
+      }
+    }
+
+    if ($count) {
+      throw new SassScriptOperationException('Undefined operation "' . $operation . '" for ' . get_class($operands[0]), SassScriptParser::$context->node);
+    }
   }
 
   /**

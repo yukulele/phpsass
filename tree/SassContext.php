@@ -178,6 +178,14 @@ class SassContext {
     return $this;
   }
 
+  public function setVariables($vars) {
+    foreach ($vars as $key => $value) {
+      if ($value !== NULL) {
+        $this->setVariable($key, $value);
+      }
+    }
+  }
+
   /**
    * Makes variables and mixins from this context available in the parent context.
    * Note that if there are variables or mixins with the same name in the two

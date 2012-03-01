@@ -50,10 +50,7 @@ class SassMixinDefinitionNode extends SassNode {
     }
     $this->name = $matches[self::NAME];
     if (isset($matches[self::ARGUMENTS])) {
-      foreach (SassScriptFunction::extractArgs($matches[self::ARGUMENTS]) as $arg) {
-        $arg = explode(($matches[self::IDENTIFIER] === self::NODE_IDENTIFIER ? '=' : ':'), trim($arg));
-        $this->args[substr(trim($arg[0]), 1)] = (count($arg) == 2 ? trim($arg[1]) : null);
-      }
+      $this->args = SassScriptFunction::extractArgs($matches[self::ARGUMENTS]);
     }
   }
 

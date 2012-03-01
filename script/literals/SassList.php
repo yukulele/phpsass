@@ -17,7 +17,7 @@ require_once('SassLiteral.php');
  * @subpackage  Sass.script.literals
  */
 class SassList extends SassLiteral {
-  
+
   var $seperator = ' ';
 
   /**
@@ -31,7 +31,7 @@ class SassList extends SassLiteral {
       $this->seperator = ($seperator == 'auto' ? ', ' : $seperator);
     }
     else if (list($list, $seperator) = $this->_parse_list($value, $seperator, true, SassScriptParser::$context)) {
-      $this->value = $list; 
+      $this->value = $list;
       $this->seperator = ($seperator == ',' ? ', ' : ' ');
     }
     else {
@@ -172,6 +172,6 @@ class SassList extends SassLiteral {
       $out[$k] = $v;
     }
 
-    return $out;    
+    return $out;
   }
 }

@@ -96,7 +96,8 @@ class SassFunctionDefinitionNode extends SassNode {
    * @return SassBoolean(false) - if no @return was fired, return false
    */
   public function execute($pcontext, $provided) {
-    $context = SassScriptFunction::fill_parameters($this->args, $provided, $pcontext, $this);
+    list($arguments, $context) = SassScriptFunction::fill_parameters($this->args, $provided, $pcontext, $this);
+    $context->setVariables($arguments);
 
     $parser = $this->parent->parser;
 

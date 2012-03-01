@@ -334,7 +334,7 @@ abstract class SassLiteral {
    */
   public static function assertType($literal, $type) {
     if (!$literal instanceof $type) {
-      throw new SassScriptFunctionException(($literal instanceof SassLiteral ? $literal->typeOf : 'literal') . ' must be a ' . $type, SassScriptParser::$context->node);
+      throw new SassScriptFunctionException(($literal instanceof SassLiteral ? get_class($literal) : 'literal') . ' must be a ' . $type, SassScriptParser::$context->node);
     }
   }
 
