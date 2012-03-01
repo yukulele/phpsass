@@ -128,11 +128,10 @@ class SassScriptFunction {
       if (is_object($arg) && isset($arg->quote)) {
         $args[$i] = $arg->toString();
       }
-      if (SassScriptParser::$context->hasVariable($i)) {
+      if (!is_numeric($i) && SassScriptParser::$context->hasVariable($i)) {
         $args[$i] = SassScriptParser::$context->getVariable($i);
       }
     }
-
 
     // CSS function: create a SassString that will emit the function into the CSS
     return new SassString($this->name . '(' . join(', ', $args) . ')');
