@@ -312,12 +312,13 @@ class SassParser {
     if (isset(self::$instance)) {
       $defaultOptions['load_paths'] = self::$instance->load_paths;
     }
+    
+    $options = array_merge($defaultOptions, $options);
 
     self::$instance = $this;
     self::$functions = $options['functions'];
     unset($options['functions']);
 
-    $options = array_merge($defaultOptions, $options);
     foreach ($options as $name=>$value) {
       $this->$name = $value;
     }

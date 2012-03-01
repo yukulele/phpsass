@@ -1,3 +1,4 @@
+Version 201203010930 - Fix to minor issues and notices (regressions due to changes in prior version)
 Version 201203010000 - Proper list support, functions: if, adjust-color, scale-color, change-color, named parameters for functions+mixins, various minor bugfixes
 Version 201202100115 - fix to @import parsing of url(x.css)
 Version 201202100100 - fix to @each parsing of things like rgba(*,*,*,*) which previously removed braces incorrectly.

@@ -198,7 +198,7 @@ class SassScriptFunction {
     foreach ($list as $k => $value) {
       if (strpos($value, ':') !== false && preg_match(SassVariableNode::MATCH, $value, $match)) {
         $return[$match[SassVariableNode::NAME]] = $match[SassVariableNode::VALUE];
-      } else if($value{0} == '$' && $include_null) {
+      } else if(substr($value, 0, 1) == '$' && $include_null) {
         $return[str_replace('$', '', $value)] = NULL;
       } elseif ($include_null || $value !== NULL) {
         $return[] = $value;
@@ -220,7 +220,7 @@ class SassScriptFunction {
     foreach ($function->getParameters() as $parameter) {
       $default = $parameter->isDefaultValueAvailable() ? $parameter->getDefaultValue() : NULL;
       if ($default !== NULL) {
-        $parsed = is_bool($default) ? new SassBoolean($default) : SassScriptParser::$instance->evaluate($default);
+        $parsed = is_bool($default) ? new SassBoolean($default) : SassScriptParser::$instance->evaluate($default, new SassContext());
         $parsed = ($parsed === NULL) ? new SassString($default) : $parsed;
       } else {
         $parsed = $default;
