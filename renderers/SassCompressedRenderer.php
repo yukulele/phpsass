@@ -88,7 +88,10 @@ class SassCompressedRenderer extends SassRenderer {
    * @return string the rendered directive
    */
   public function renderRule($node, $properties, $rules) {
-    return (!empty($properties) ? $this->renderSelectors($node) . $this->between() . $this->renderProperties($node, $properties) . $this->end() : '') . $rules;
+    $selectors = $this->renderSelectors($node);
+    if ($selectors) {
+      return (!empty($properties) ? $selectors . $this->between() . $this->renderProperties($node, $properties) . $this->end() : '') . $rules;
+    }
   }
 
   /**
@@ -97,6 +100,13 @@ class SassCompressedRenderer extends SassRenderer {
    * @return string the rendered selectors
    */
   protected function renderSelectors($node) {
-    return join(',', $node->selectors);
+    $selectors = array();
+    foreach ($node->selectors as $selector) {
+      if (!$node->isPlaceholder($selector)) {
+        $selectors[] = $selector;
+      }
+    }
+
+    return join(',', $selectors);
   }
 }

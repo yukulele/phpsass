@@ -125,13 +125,22 @@ class SassRuleNode extends SassNode {
       else {
         $pattern = preg_quote($extendee);
       }
+
       foreach (preg_grep('/'.$pattern.'/', $this->selectors) as $selector) {
         foreach ($extenders as $extender) {
+          # first if establishes that we are using a placeholder and the extendee begins with a tag
+          if ($extendee{0} == '%' && $selector{0} != '%' && preg_match('/(^| )[a-zA-Z][^%]*' . preg_quote($extendee) . '([^a-z0-9_-]|$)/', $selector)) {
+            # the second if establishes that the extender is a tag rather than a class/id
+            $zero = ord(strtolower(substr($extender, 0, 1))); // cheaper than regex
+            if ($zero >= 97 && $zero <= 122) {
+              continue;
+            }
+          }
           if (is_array($extendee)) {
-            $this->selectors[] = preg_replace('/(.*?)'.$pattern.'$/', "\\1$extender\\2", $selector);
+            $this->selectors[] = preg_replace('/(.*?)'.$pattern.'([^a-zA-Z0-9_-]|$)/', '$1' . $extender . '$2', $selector);
           }
           elseif ($this->isSequence($extender) || $this->isSequence($selector)) {
-            $this->selectors = array_merge($this->selectors, $this->mergeSequence($extender, $selector));
+            $this->selectors = array_merge($this->selectors, $this->mergeSequence($extender, $extendee, $selector));
           }
           else {
             $this->selectors[] = str_replace($extendee, $extender, $selector);
@@ -160,13 +169,23 @@ class SassRuleNode extends SassNode {
     return strpos($selector, ' ') !== false;
   }
 
+  public function isPlaceholder($selector) {
+    return strpos($selector, '%') !== false;
+  }
+
   /**
    * Merges selector sequences
    * @param string the extender selector
    * @param string selector to extend
    * @return array the merged sequences
    */
-  private function mergeSequence($extender, $selector) {
+  private function mergeSequence($extender, $extendee, $selector) {
+    // if it's a placeholder, be lazy. Needs tests.
+    if ($extendee[0] == '%') {
+      // need to stop things like a%foo accepting div { @extend %foo }
+      return array(str_replace($extendee, $extender,  $selector));
+    }
+
     $extender = explode(' ', $extender);
     $end = array_pop($extender);
     $selector = explode(' ', $selector);
@@ -177,21 +196,20 @@ class SassRuleNode extends SassNode {
       while(trim($extender[0]) === trim($selector[0])) {
         $common[] = array_shift($selector);
         array_shift($extender);
-
         if (!count($extender)) {
           break;
         }
       }
     }
 
-    $begining = (!empty($common) ? join(' ', $common) . ' ' : '');
+    $beginning = (!empty($common) ? join(' ', $common) . ' ' : '');
 
     # Richard Lyon - 2011-10-25 - removes duplicates by uniquing and trimming.
     # regex removes whitespace from start and and end of string as well as removing
     # whitespace following whitespace. slightly quicker than a trim and simpler replace
     return array_unique(array(
-      preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $begining.join(' ', $selector).' '.join(' ', $extender). ' ' . $end),
-      preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $begining.join(' ', $extender).' '.join(' ', $selector). ' ' . $end)
+      preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $beginning.join(' ', $selector).' '.join(' ', $extender). ' ' . $end),
+      preg_replace('/(^\s+|(\s)\s+|\s+$)/', '$2', $beginning.join(' ', $extender).' '.join(' ', $selector). ' ' . $end)
     ));
   }
 
@@ -230,12 +248,14 @@ class SassRuleNode extends SassNode {
       $return = array();
       foreach ($this->parentSelectors as $parent) {
         foreach ($normalSelectors as $selector) {
-          $return[] = $parent . ' ' . $selector;
+          $spacer = (substr($selector, 0, 1) == '[') ? '' : ' ';
+
+          $return[] = $parent . $spacer . $selector;
         }
       }
       $normalSelectors = $return;
     }
-
+    
     return array_merge($normalSelectors, $resolvedSelectors);
   }
 

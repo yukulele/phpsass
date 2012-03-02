@@ -45,7 +45,7 @@ class SassNestedRenderer extends SassExpandedRenderer {
    * @return string the rendered directive
    */
   public function renderDirective($node, $properties) {
-      $directive = $this->getIndent($node) . $node->directive . $this->between() . $this->renderProperties($node, $properties);
+    $directive = $this->getIndent($node) . $node->directive . $this->between() . $this->renderProperties($node, $properties);
     return preg_replace('/(.*})\n$/', '\1', $directive) . $this->end();
   }
 
@@ -55,7 +55,14 @@ class SassNestedRenderer extends SassExpandedRenderer {
    * @return string the rendered selectors
    */
   protected function renderSelectors($node) {
+    $selectors = array();
+    foreach ($node->selectors as $selector) {
+      if (!$node->isPlaceholder($selector)) {
+        $selectors[] = $selector;
+      }
+    }
+        
     $indent = $this->getIndent($node);
-    return $indent.join(",\n$indent", $node->selectors);
+    return $indent.join(",\n$indent", $selectors);
   }
 }

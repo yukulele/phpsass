@@ -1,3 +1,4 @@
+Version 201203021700 - Placeholder selectors! Fixes to [selectors] when nested leaving a space.
 Version 201203011100 - Hotfix for unfound function arguments in url() turning up empty from @imported files.
 Version 201203010930 - Fix to minor issues and notices (regressions due to changes in prior version)
 Version 201203010000 - Proper list support, functions: if, adjust-color, scale-color, change-color, named parameters for functions+mixins, various minor bugfixes
