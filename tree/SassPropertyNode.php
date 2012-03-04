@@ -113,13 +113,6 @@ class SassPropertyNode extends SassNode {
       }
 
       $node->value = $result ? $result->toString() : $this->value;
-      if (array_key_exists($node->name, $this->vendor_properties)) {
-        foreach ($this->vendor_properties[$node->name] as $vendorProperty) {
-          $_node = clone $node;
-          $_node->name = $vendorProperty;
-          $return[] = $_node;
-        }
-      }
       $return[] = $node;
     }
     if ($this->children) {

@@ -1,4 +1,5 @@
 <?php
+
 /* SVN FILE: $Id$ */
 /**
  * SassParser class file.
@@ -203,20 +204,6 @@ class SassParser {
   public $syntax;
 
   /**
-   * vendor_properties:
-   * If enabled a property need only be written in the standard form and vendor
-   * specific versions will be added to the style sheet.
-   * @var mixed array: vendor properties, merged with the built-in vendor
-   * properties, to automatically apply.
-   * Boolean true: use built in vendor properties.
-   *
-   * Defaults to vendor_properties disabled.
-   * @see _vendorProperties
-   */
-  public $vendor_properties = array();
-
-
-  /**
    * debug:
    * If enabled it causes exceptions to be thrown on errors. This can be
    * useful for tracking down a bug in your sourcefile but will cause a
@@ -226,43 +213,6 @@ class SassParser {
    * Defaults to FALSE
    */
   public $debug = FALSE;
-
-  /**#@-*/
-  /**
-   * Defines the build-in vendor properties
-   * @var array built-in vendor properties
-   * @see vendor_properties
-   */
-  public $_vendorProperties = array(
-    'border-radius' => array(
-      '-moz-border-radius',
-      '-webkit-border-radius',
-      '-khtml-border-radius'
-    ),
-    'border-top-right-radius' => array(
-      '-moz-border-radius-topright',
-      '-webkit-border-top-right-radius',
-      '-khtml-border-top-right-radius'
-    ),
-    'border-bottom-right-radius' => array(
-      '-moz-border-radius-bottomright',
-      '-webkit-border-bottom-right-radius',
-      '-khtml-border-bottom-right-radius'
-    ),
-    'border-bottom-left-radius' => array(
-      '-moz-border-radius-bottomleft',
-      '-webkit-border-bottom-left-radius',
-      '-khtml-border-bottom-left-radius'
-    ),
-    'border-top-left-radius' => array(
-      '-moz-border-radius-topleft',
-      '-webkit-border-top-left-radius',
-      '-khtml-border-top-left-radius'
-    ),
-    'box-shadow' => array('-moz-box-shadow', '-webkit-box-shadow'),
-    'box-sizing' => array('-moz-box-sizing', '-webkit-box-sizing'),
-    'opacity' => array('-moz-opacity', '-webkit-opacity', '-khtml-opacity'),
-  );
 
   /**
    * Constructor.
@@ -277,15 +227,7 @@ class SassParser {
       }
       $options = count((array) $options) ? (array) $options : array();
     }
-    if (!empty($options['vendor_properties'])) {
-      if ($options['vendor_properties'] === true) {
-        $this->vendor_properties = $this->_vendorProperties;
-      }
-      elseif (is_array($options['vendor_properties'])) {
-        $this->vendor_properties = array_merge($this->_vendorProperties, $options['vendor_properties']);
-      }
-    }
-    unset($options['language'], $options['vendor_properties']);
+    unset($options['language']);
 
     $basepath = $_SERVER['PHP_SELF'];
     $basepath = substr($basepath, 0, strrpos($basepath, '/') + 1);
@@ -312,7 +254,7 @@ class SassParser {
     if (isset(self::$instance)) {
       $defaultOptions['load_paths'] = self::$instance->load_paths;
     }
-    
+
     $options = array_merge($defaultOptions, $options);
 
     self::$instance = $this;
@@ -396,10 +338,6 @@ class SassParser {
     return $this->syntax;
   }
 
-  public function getVendor_properties() {
-    return $this->vendor_properties;
-  }
-
   public function getDebug() {
     return $this->debug;
   }
@@ -425,7 +363,6 @@ class SassParser {
       'quiet' => $this->quiet,
       'style' => $this->style,
       'syntax' => $this->syntax,
-      'vendor_properties' => $this->vendor_properties,
     );
   }
 

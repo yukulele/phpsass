@@ -26,7 +26,6 @@
      *  Testing is eased by stripping out all whitespace, which may
      *  introduce bugs of their own.
      */
-
     include 'SassParser.php';
 
     $test_dir = './tests';

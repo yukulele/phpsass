@@ -93,7 +93,7 @@ class SassList extends SassLiteral {
     return count($list) > 1 ? $subject : FALSE;
   }
 
-  private static function _parse_list($list, $seperator = 'auto', $lex = true, $context = null) {
+  public static function _parse_list($list, $seperator = 'auto', $lex = true, $context = null) {
     if ($seperator == 'auto') {
       $seperator = ',';
       $list = $list = self::_build_list($list, ',');
@@ -138,10 +138,10 @@ class SassList extends SassLiteral {
       switch ($char) {
         case '"':
         case "'":
-          if (!$quotes && $quotes == $char) {
+          if (!$quotes) {
             $quotes = $char;
           }
-          if ($quotes && $quotes == $char) {
+          else if ($quotes && $quotes == $char) {
             $quotes = false;
           }
           $stack .= $char;
@@ -165,7 +165,11 @@ class SassList extends SassLiteral {
           $stack .= $char;
       }
     }
-    $out[] = $stack;
+    if ($braces || $quotes) {
+      $out[count($out) - 1] .= $stack;
+    } else {
+      $out[] = $stack;
+    }
 
     foreach ($out as $k => $v) {
       $v = trim($v, ', ');

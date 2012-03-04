@@ -235,11 +235,16 @@ class SassRuleNode extends SassNode {
 
     foreach ($this->selectors as $key=>$selector) {
       $selector = $this->interpolate($selector, $context);
-      if ($this->hasParentReference($selector)) {
-        $resolvedSelectors = array_merge($resolvedSelectors, $this->resolveParentReferences($selector, $context));
-      }
-      else {
-        $normalSelectors[] = $selector;
+      $selectors = SassList::_build_list($selector);
+
+      foreach ($selectors as $selector) {
+        $selector = trim($selector, ' \'"'); // strip whitespace and quotes, just-in-case.
+        if ($this->hasParentReference($selector)) {
+          $resolvedSelectors = array_merge($resolvedSelectors, $this->resolveParentReferences($selector, $context));
+        }
+        else {
+          $normalSelectors[] = $selector;
+        }
       }
     } // foreach
 
@@ -255,7 +260,7 @@ class SassRuleNode extends SassNode {
       }
       $normalSelectors = $return;
     }
-    
+
     return array_merge($normalSelectors, $resolvedSelectors);
   }
 

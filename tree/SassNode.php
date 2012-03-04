@@ -216,14 +216,6 @@ class SassNode {
   }
 
   /**
-   * Returns vendor specific properties
-   * @return array vendor specific properties
-   */
-  public function getVendor_properties() {
-    return $this->parser->vendor_properties;
-  }
-
-  /**
    * Returns the filename for this node
    * @return string the filename for this node
    */

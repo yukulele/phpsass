@@ -45,30 +45,12 @@ class SassEachNode extends SassNode {
   public function __construct($token) {
     parent::__construct($token);
     if (!preg_match(self::MATCH, $token->source, $matches)) {
-      if ($GLOBALS['SassParser_debug']) {
-        throw new SassEachNodeException('Invalid @each directive', $this);
-      }
+      throw new SassEachNodeException('Invalid @each directive', $this);
     }
     else {
       $this->variable = trim($matches[self::VARIABLE]);
-
-      if (count($bits = explode(',', $this->variable)) > 1) {
-        $this->variable = trim(array_pop($bits), ' $,');
-        $this->index_name = trim($bits[0], ' $,');
-      }
-      else {
-        $this->index_name = 'i';
-      }
-
       $this->in = $matches[self::IN];
     }
-  }
-
-  public function getIndex_name() {
-    return (isset($this->index_name) ? $this->index_name : 'i');
-  }
-  public function setIndex_name($value) {
-    $this->index_name = $value;
   }
 
   /**
@@ -82,79 +64,13 @@ class SassEachNode extends SassNode {
     if ($this->variable && $this->in) {
       $context = new SassContext($context);
 
-      try {
-        $eval_in = $this->evaluate($this->in, $context->parent)->value;
-      } catch (Exception $e) {
-        $eval_in = $this->in;
-      }
-      $eval_in = $this->parse_in($eval_in);
-
-      foreach ($eval_in as $i => $in) {
-        $context->setVariable($this->index_name, new SassNumber($i));
-        $context->setVariable($this->variable, new SassString(trim($in)));
+      list($in, $sep) = SassList::_parse_list($this->in, 'auto', true, $context);
+      foreach ($in as $var) {
+        $context->setVariable($this->variable, $var);
         $children = array_merge($children, $this->parseChildren($context));
       }
     }
     $context->merge();
     return $children;
-  }
-
-  private function parse_in($string) {
-    $current = '';
-    $char = '';
-    $in_brace = FALSE;
-    $list = array();
-
-    if (strpos($string, '(') === FALSE) {
-      return explode(',', $string);
-    }
-
-    for ($i = 0; $i < strlen($string); $i++) {
-      $last = $char;
-      $char = $string{$i};
-
-      if ($in_brace) {
-        if ($char == ')') {
-          if ($in_brace > 1) {
-            $current .= $char;
-          }
-          $list[] = trim($current);
-          if (strlen($string) < $i +1 && $string{$i + 1} == ',') {
-            $i++; # skip the comma
-          }
-          $current = '';
-          $in_brace =  FALSE;
-        }
-        else {
-          $current .= $char;
-        }
-        continue;
-      }
-
-      if ($char == '(') {
-        $in_brace = (ctype_alpha($last)) ? 2 : 1;
-        if ($in_brace > 1) {
-          $current .= $char;
-        }
-        continue;
-      }
-
-      if ($char == ',') {
-        $list[] = trim($current);
-        $current = '';
-        continue;
-      }
-
-      $current .= $char;
-    }
-    $list[] = trim($current);
-    $real_list = array();
-    foreach ($list as $k => $v) {
-      if (strlen(trim($v))) {
-        $real_list[] = $v;
-      }
-    }
-
-    return $real_list;
   }
 }

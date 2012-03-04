@@ -111,6 +111,11 @@ class SassNumber extends SassLiteral {
     if ($other instanceof SassColour) {
       return $other->op_plus($this);
     }
+    else if ($other instanceOf SassString) {
+      $other = clone $other;
+      $other->value = $this->value . $other->value;
+      return $other;
+    }
     elseif (!$other instanceof SassNumber) {
       throw new SassNumberException('Number must be a number', SassScriptParser::$context->node);
     }

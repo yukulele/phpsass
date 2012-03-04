@@ -133,6 +133,7 @@ class SassScriptFunction {
       }
     }
 
+
     // CSS function: create a SassString that will emit the function into the CSS
     return new SassString($this->name . '(' . join(', ', $args) . ')');
   }

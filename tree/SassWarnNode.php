@@ -62,7 +62,7 @@ class SassWarnNode extends SassNode {
       call_user_func(SassParser::$instance->options['callbacks']['warn'], $statement, $context);
     }
 
-    if (SassParser::$instance->options['quiet']) {
+    if (SassParser::$instance->getQuiet()) {
       return array(new SassString(''));
     }
     else {
