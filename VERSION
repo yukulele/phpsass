@@ -1,3 +1,4 @@
+Version 201203061130 - Added min/max functions, fix to lists (evaluation instead of just lexing of values)
 Version 201203042100 - Fixes to interpolation in selectors, test coverage, and some cleanup
 Version 201203021700 - Placeholder selectors! Fixes to [selectors] when nested leaving a space.
 Version 201203011100 - Hotfix for unfound function arguments in url() turning up empty from @imported files.

@@ -735,6 +735,31 @@ class SassScriptFunctions {
     return $number;
   }
 
+  public static function max($n1, $n2, $n3 = false, $n4 = false, $n5 = false) {
+    $max = $n1;
+    for ($i = 2; $i <= 5; $i++) {
+      $var = 'n' . $i;
+      $var = $$var;
+      if ($var instanceof SassNumber && $var->op_gt($max)) {
+        $max = $var;
+      }
+    }
+    return $max;
+  }
+
+  public static function min($n1, $n2, $n3 = false, $n4 = false, $n5 = false) {
+    $max = $n1;
+    for ($i = 2; $i <= 5; $i++) {
+      $var = 'n' . $i;
+      $var = $$var;
+      if ($var instanceof SassNumber && $var->op_lt($max)) {
+        $max = $var;
+      }
+    }
+    return $max;
+  }
+
+
   /**
    * Inspects the unit of the number, returning it as a quoted string.
    * Alias for units.

@@ -109,7 +109,7 @@ class SassList extends SassLiteral {
     if ($lex) {
       $context = new SassContext($context);
       foreach ($list as $k => $v) {
-        $list[$k] = current(SassScriptLexer::$instance->lex($v, $context));
+        $list[$k] = SassScriptParser::$instance->evaluate($v, $context);
       }
     }
     return array($list, $seperator);
