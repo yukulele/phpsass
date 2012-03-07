@@ -79,6 +79,7 @@ class SassList extends SassLiteral {
    * @return string string representation of the value.
    */
   public function toString() {
+    $this->seperator = trim($this->seperator) . ' ';
     return implode($this->seperator, $this->value);
   }
 
@@ -165,10 +166,12 @@ class SassList extends SassLiteral {
           $stack .= $char;
       }
     }
-    if ($braces || $quotes) {
-      $out[count($out) - 1] .= $stack;
-    } else {
-      $out[] = $stack;
+    if (strlen($stack)) {
+      if (($braces || $quotes) && count($out)) {
+        $out[count($out) - 1] .= $stack;
+      } else {
+        $out[] = $stack;
+      }
     }
 
     foreach ($out as $k => $v) {

@@ -108,11 +108,7 @@ class SassPropertyNode extends SassNode {
 
       $result = $this->evaluate($this->interpolate($this->value, $context), $context, SassScriptParser::CSS_PROPERTY);
 
-      if (!is_object($result)) {
-        $node->value = $this->value;
-      }
-
-      $node->value = $result ? $result->toString() : $this->value;
+      $node->value = $result && is_object($result) ? $result->toString() : $this->value;
       $return[] = $node;
     }
     if ($this->children) {

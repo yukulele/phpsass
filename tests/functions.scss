@@ -2,20 +2,15 @@
 	@return 'foo, bar, foo + bar';
 }
 
-/* this will return $one$two, respecting name vars on the input */
-@function named($one: '', $two: '') {
-	@return $one + $two;
-}
-
-/* this will return $one$two, ignoring of named vars on the input */
-@function unnamed($one, $two) {
-	@return $one + $two;
+@function x($one: 'one', $two: 'two') {
+    @return $one + ' ' + $two;
 }
 
 #{test()} {
-	color: blue;
-	named: named(bar, $one: foo);
-	unnamed: unnamed(bar, $one: foo);
-
-	adjust-color: adjust-color(#00F, $blue: -15);
+    content: x()                 if(x() == 'one two', true, false);
+    content: x('foo', 'bar')     if(x('foo', 'bar') == 'foo bar', true, false);
+    content: x('foo')            if(x('foo') == 'foo two', true, false);
+    content: x($two: 'foo')      if(x($two: 'foo') == 'one foo', true, false);
+    content: x($two: 'foo', bar) if(x($two: 'foo', bar) == bar foo, true, false);
+    adjust-color: adjust-color(#00F, $blue: -15);
 }

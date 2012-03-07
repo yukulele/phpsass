@@ -82,7 +82,6 @@ class SassScriptFunction {
     $name = preg_replace('/[^a-z0-9_]/', '_', strtolower($this->name));
     $args = $this->process_arguments($this->args);
 
-
     foreach ($this->args as $k => $v) {
       if (!is_numeric($k)) {
         self::$context->setVariable($k, $v);
@@ -204,6 +203,7 @@ class SassScriptFunction {
         $return[] = $value;
       }
     }
+
     return $return;
   }
 

@@ -57,7 +57,14 @@ class SassScriptParser {
    */
   public function interpolate($string, $context) {
     for ($i = 0, $n = preg_match_all(self::MATCH_INTERPOLATION, $string, $matches); $i < $n; $i++) {
-      $var = $this->evaluate($matches[1][$i], $context)->toString();
+      $var = $this->evaluate($matches[1][$i], $context);
+
+      if ($var instanceOf SassString) {
+        $var = $var->value;
+      } else {
+        $var = $var->toString();
+      }
+
       if(preg_match('/^unquote\((["\'])(.*)\1\)$/', $var, $match)){
           $val = $match[2];
       }
@@ -91,7 +98,8 @@ class SassScriptParser {
     while (count($tokens)) {
       $token = array_shift($tokens);
       if ($token instanceof SassScriptFunction) {
-        array_push($operands, $token->perform());
+        $perform = $token->perform();
+        array_push($operands, $perform);
       }
       elseif ($token instanceof SassLiteral) {
         if ($token instanceof SassString) {
@@ -107,7 +115,8 @@ class SassScriptParser {
         array_push($operands, $token->perform($args));
       }
     }
-    return array_shift($operands);
+
+    return self::makeSingular($operands);
   }
 
   /**
@@ -209,5 +218,40 @@ class SassScriptParser {
       }
     }
     return $outputQueue;
+  }
+
+  /**
+   * Reduces a set down to a singular form
+   */
+  public static function makeSingular($operands) {
+    if (count($operands) == 1) {
+      return $operands[0];
+    }
+
+    $result = null;
+    foreach ($operands as $i => $operand) {
+      if (is_object($operand)) {
+        if (!$result) {
+          $result = $operand;
+          continue;
+        }
+        if ($result instanceOf SassString) {
+          $result = $result->op_concat($operand);
+        }
+        else {
+          $result = $result->op_plus($operand);
+        }
+      }
+      else {
+        $string = new SassString(' ');
+        if (!$result) {
+          $result = $string;
+        } else {
+          $result = $result->op_plus($string);
+        }
+      }
+    }
+
+    return $result ? $result : array_shift($operands);
   }
 }
