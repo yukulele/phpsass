@@ -858,10 +858,10 @@ class SassColour extends SassLiteral {
 
     $l = ($max + $min) / 2;
 
-    if ($l > 0.5)
-      $s =  2 - $d != 0 ? $d / (2 - $d) : 0;
+   if ($l > 0.5)
+      $s = (2 - $max - $min) != 0 ? $d / (2 - $max - $min) : 0;
     else
-      $s =  $d != 0 ? 1 : 0;
+      $s = ($max + $min) != 0 ? $d / ($max + $min) : 0;
 
     while ($h > 360) $h -= 360;
     while ($h < 0) $h += 360;
