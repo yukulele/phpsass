@@ -264,6 +264,10 @@ class SassParser {
     foreach ($options as $name=>$value) {
       $this->$name = $value;
     }
+    
+    if (!$this->property_syntax && $this->syntax == SassFile::SCSS) {
+        $this->property_syntax = "scss";
+    }
 
     $GLOBALS['SassParser_debug'] = $this->debug;
   }
