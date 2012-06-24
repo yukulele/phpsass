@@ -408,6 +408,11 @@ class SassParser {
         $this->filename = $file;
 
         $this->syntax = substr($this->filename, -4);
+            
+        if (!$this->property_syntax && $this->syntax == SassFile::SCSS) {
+            $this->property_syntax = "scss";
+        }
+        
         if ($this->syntax !== SassFile::SASS && $this->syntax !== SassFile::SCSS) {
           if ($this->debug) {
             throw new SassException('Invalid {what}', array('{what}' => 'syntax option'));
