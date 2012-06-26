@@ -256,6 +256,11 @@ class SassParser {
     }
 
     $options = array_merge($defaultOptions, $options);
+    
+    // We don't want to allow setting of internal only property syntax value
+    if (isset($options["property_syntax"]) && $options["property_syntax"] == "scss") {
+        unset($options["property_syntax"]);
+    }
 
     self::$instance = $this;
     self::$functions = $options['functions'];
@@ -363,7 +368,7 @@ class SassParser {
       'line_numbers' => $this->line_numbers,
       'load_path_functions' => $this->load_path_functions,
       'load_paths' => $this->load_paths,
-      'property_syntax' => $this->property_syntax,
+      'property_syntax' => ($this->property_syntax == "scss" ? null : $this->property_syntax),
       'quiet' => $this->quiet,
       'style' => $this->style,
       'syntax' => $this->syntax,
