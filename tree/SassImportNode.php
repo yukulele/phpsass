@@ -57,7 +57,7 @@ class SassImportNode extends SassNode {
           } else {
             $file = "url('$file')";
           }
-          return array(new SassString("@import $file;\n"));
+          return array(new SassString("@import $file;"), new SassString("\n"));
         }
         $file = trim($file, '\'"');
         $files = SassFile::get_file($file, $this->parser);
