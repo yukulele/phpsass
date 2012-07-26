@@ -71,6 +71,10 @@ class SassString extends SassLiteral {
     return $this;
   }
 
+  public function op_eq($other) {
+    return new SassBoolean($this->value == $other->value);
+  }
+
   /**
    * Equals - works better
    */
@@ -102,8 +106,13 @@ class SassString extends SassLiteral {
    * @return string string representation of the value.
    */
   public function toString() {
-    $value = strlen(trim($this->value)) ? trim($this->value) : $this->value;
-    return $this->quote . $value . $this->quote;
+    if ($this->quote) {
+        $value = $this->quote . $this->value . $this->quote;
+    }
+    else {      
+        $value = strlen(trim($this->value)) ? trim($this->value) : $this->value;
+    }
+    return $value;
   }
 
   public function toVar() {

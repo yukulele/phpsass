@@ -16,10 +16,12 @@
  * @subpackage  Sass.tree
  */
 class SassPropertyNode extends SassNode {
+  const MATCH_PROPERTY_SCSS = '/^([^\s=:"]*)\s*(?:(= )|:)([^\:].*?)?$/';
   const MATCH_PROPERTY_NEW = '/^([^\s=:"]+)\s*(?:(= )|:)([^\:].*?)?$/';
   const MATCH_PROPERTY_OLD = '/^:([^\s=:]+)(?:\s*(=)\s*|\s+|$)(.*)/';
   const MATCH_PSUEDO_SELECTOR = '/^:*\w[-\w]+\(?/i';
   const MATCH_INTERPOLATION = '/^#\{(.*?)\}/i';
+  const MATCH_PROPRIETARY_SELECTOR = '/^:?-(moz|webkit|o|ms)-/';
   const NAME   = 1;
   const SCRIPT = 2;
   const VALUE   = 3;
@@ -217,6 +219,9 @@ class SassPropertyNode extends SassNode {
    */
   public static function match($token, $syntax) {
     switch ($syntax) {
+      case 'scss':
+        preg_match(self::MATCH_PROPERTY_SCSS, $token->source, $matches);
+        break;
       case 'new':
         preg_match(self::MATCH_PROPERTY_NEW, $token->source, $matches);
         break;
@@ -246,6 +251,7 @@ class SassPropertyNode extends SassNode {
   public static function isPseudoSelector($string) {
     preg_match(self::MATCH_PSUEDO_SELECTOR, $string, $matches);
     return (isset($matches[0]) && in_array($matches[0], self::$psuedoSelectors)) ||
-      preg_match(self::MATCH_INTERPOLATION, $string);
+      preg_match(self::MATCH_INTERPOLATION, $string) ||
+      preg_match(self::MATCH_PROPRIETARY_SELECTOR, $string);
   }
 }
