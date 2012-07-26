@@ -18,7 +18,7 @@
 class SassImportNode extends SassNode {
   const IDENTIFIER = '@';
   const MATCH = '/^@import\s+(.+)/i';
-  const MATCH_CSS = '/^((url)\((.+)\)|.+" \w+|"http|.+\.css)/im';
+  const MATCH_CSS = '/^((url)\((.+)\)|.+" \w+|http|.+\.css)/im';
   const FILES = 1;
 
   /**
@@ -35,7 +35,8 @@ class SassImportNode extends SassNode {
     parent::__construct($token);
     $this->parent = $parent;
     preg_match(self::MATCH, $token->source, $matches);
-    foreach (explode(',', $matches[self::FILES]) as $file) {
+
+    foreach (SassList::_build_list($matches[self::FILES]) as $file) {
       $this->files[] = trim($file, '"\'; ');
     }
   }
