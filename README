@@ -1,4 +1,4 @@
-NEW! Try it out online, alongside the ruby compiler: http://phpsass.fubhy.com/
+NEW! Try it out online, alongside the ruby compiler: http://phpsass.com/try
 
 This is fork of phamlp primarily for inclusiong as a Drupal pre-processor.
 However, there is no Drupal-specific code and it will work for any PHP system.
