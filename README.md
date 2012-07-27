@@ -1,6 +1,4 @@
-#PHPSass
-
-[![build status](https://secure.travis-ci.org/richthegeek/phpsass.png)](https://secure.travis-ci.org/#!/richthegeek/phpsass)
+#PHPSass [![build status](https://secure.travis-ci.org/richthegeek/phpsass.png)](https://secure.travis-ci.org/#!/richthegeek/phpsass)
 
 ## Try online
 You can compile and compare SCSS against the ruby compiler at <http://phpsass.com/try>
