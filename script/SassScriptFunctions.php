@@ -572,10 +572,10 @@ class SassScriptFunctions {
   /**
    * Scales one or more property of the color by the percentage requested.
    * @param SassColour the colour to adjust
-   * @param SassNumber (red, green, blue, hue, saturation, lightness, alpha) - the amount(s) to scale by
+   * @param SassNumber (red, green, blue, saturation, lightness, alpha) - the amount(s) to scale by
    * @return SassColour
    */
-  public static function scale_color($color, $red = 0, $green = 0, $blue = 0, $hue = 0, $saturation = 0, $lightness = 0, $alpha = 0) {
+  public static function scale_color($color, $red = 0, $green = 0, $blue = 0, $saturation = 0, $lightness = 0, $alpha = 0) {
     $maxes = array(
       'red' => 255,
       'green' => 255,
@@ -588,15 +588,8 @@ class SassScriptFunctions {
     foreach ($maxes as $property => $max) {
       $obj = $$property;
       $scale = 0.01 * $obj->value;
-      if (is_a($color->$property, 'SassNumber') && $color->$property->isUnitless()) {
-        $diff = $scale > 0 ? $max - (string)$color->$property : (string)$color->$property;
-        $new = (string)$color->$property + $diff * $scale;
-      }
-      else {
-        $diff = $scale > 0 ? $max - $color->$property : $color->$property;
-        $new = $color->$property + $diff * $scale;
-      }
-      $color->$property = $new;
+      $diff = $scale > 0 ? $max - $color->$property : $color->$property;
+      $color->$property = $color->$property + $diff * $scale;
     }
     $color->hsl2rgb();
     return $color;
