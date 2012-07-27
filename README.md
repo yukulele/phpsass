@@ -13,10 +13,10 @@ module on Drupal.org for information on how to add frameworks and custom
 functions. Docs will be coming when we aren't doing more important things.
 
 ## Contributors:
- * Richard Lyon - @richthegeek
- * Sebastian Siemssen - @thefuhby
- * Steve Jones - @darthsteven
- * Sam Richard - @snugug
+ * Richard Lyon - [@richthegeek](https://github.com/richthegeek)
+ * Sebastian Siemssen - [@thefuhby](https://twitter.com/thefubhy)
+ * Steve Jones - [@darthsteven](https://github.com/darthsteven)
+ * Sam Richard - [@snugug](https://github.com/snugug)
 
 ## Other info
 Origin: <http://code.google.com/p/phamlp/>
