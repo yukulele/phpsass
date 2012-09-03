@@ -79,7 +79,7 @@ class SassMediaNode extends SassNode {
     //  $rule = $try;
     //}
 
-    $node->children = array(new SassString($rule->render()));
+    $node->children = array(new SassString($rule->render($context)));
 
     return array($node);
   }
