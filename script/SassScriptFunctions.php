@@ -650,6 +650,21 @@ class SassScriptFunctions {
     return $colour;
   }
 
+  /**
+   * returns an IE hex string for a color with an alpha channel
+   * suitable for passing to IE filters.
+   */
+  function ie_hex_str($color) {
+    if (!($color instanceof SassColour)) {
+      $color = new SassColour($color);
+    }
+    $alpha = round($color->alpha * 255);
+    $alpha_str = str_pad(dechex($alpha), 2, '0', STR_PAD_LEFT);
+    $col = $color->asHex(FALSE);
+    return new SassString(strtoupper('#' . $alpha_str . $col));
+  }
+
+
   /*
    * Number Functions
    */
@@ -891,6 +906,26 @@ class SassScriptFunctions {
     return $list;
   }
 
+  public static function index($list, $value) {
+    if (!($list instanceOf SassList)) {
+      $list = new SassList($list->toString());
+    }
+    return $list->index($value);
+  }
+
+
+  // New function zip allows several lists to be combined into one list of lists. For example: zip(1px 1px 3px, solid dashed solid, red green blue) becomes 1px solid red, 1px dashed green, 3px solid blue
+  function zip() {
+    $result = new SassList('', ',');
+    foreach (func_get_args() as $i => $arg) {
+      $list = new SassList($arg);
+      foreach ($list->value as $j => $val) {
+        $result->value += array($j => new SassList('', 'space'));
+        $result->value[$j]->value[] = (string) $val;
+      }
+    }
+    return $result;
+  }
 
   /*
    * Misc. Functions

@@ -24,6 +24,7 @@ class SassNumber extends SassLiteral {
    * Regx for matching and extracting numbers
    */
   const MATCH = '/^((?:-)?(?:\d*\.)?\d+)(([a-z%]+)(\s*[\*\/]\s*[a-z%]+)*)?/i';
+  // const MATCH = '/^(?!\d+px\/)((?:-)?(?:\d.)?\d+)(([a-z%]+)(\s[*\/]\s[a-z%]+))?/i';  
   const VALUE = 1;
   const UNITS = 2;
   /**
