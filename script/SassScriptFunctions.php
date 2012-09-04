@@ -764,7 +764,7 @@ class SassScriptFunctions {
     for ($i = 2; $i <= 5; $i++) {
       $var = 'n' . $i;
       $var = $$var;
-      if ($var instanceof SassNumber && $var->op_gt($max)) {
+      if ($var instanceof SassNumber && $var->op_gt($max)->value) {
         $max = $var;
       }
     }
