@@ -254,7 +254,7 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase {
   }
 
   public function testNestedPseudo() {
-    $this->runSassTest('nested_psuedo.scss');
+    $this->runSassTest('nested_pseudo.scss');
   }
 
   public function testNumber() {
