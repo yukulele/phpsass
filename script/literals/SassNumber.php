@@ -523,7 +523,7 @@ class SassNumber extends SassLiteral {
     if (!isset($this->units)) {
       $this->units = $this->getUnits();
     }
-    return ($this->units == 'px' ? floor($this->value) : number_format (round($this->value, self::PRECISION), self::PRECISION)) . $this->units;
+    return ($this->units == 'px' ? floor($this->value) : str_replace(',','.',round($this->value, self::PRECISION))) . $this->units;
   }
 
   /**
