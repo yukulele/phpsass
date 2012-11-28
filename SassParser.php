@@ -411,8 +411,7 @@ class SassParser {
       $files_source = '';
       foreach ($files as $file) {
         $this->filename = $file;
-        $extension=explode('.',$this->filename);
-        $this->syntax = array_pop($extension);
+        $this->syntax = substr(strrchr($file, '.'), 1);
         if($this->syntax == SassFile::CSS){
             $this->property_syntax = "css";
         }elseif (!$this->property_syntax && $this->syntax == SassFile::SCSS) {
