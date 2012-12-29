@@ -535,4 +535,26 @@ class SassNumber extends SassLiteral {
   public static function isa($subject) {
     return (preg_match(self::MATCH, $subject, $matches) ? $matches[0] : false);
   }
+
+    /**
+     * Returns the number of values of SassNumber
+     * @return int
+     */
+    public function length() {
+        return count($this->value);
+    }
+
+    /**
+     * Returns the nth value of the SassNumber
+     * @param int - the nth position of value
+     * @return SassBoolean|SassNumber
+     */
+    public function nth($i) {
+        $i = $i - 1; # SASS uses 1-offset arrays
+        if (isset($this->value[$i])) {
+            return new SassNumber($this->value[$i]);
+        }
+        return new SassBoolean(false);
+    }
+
 }
