@@ -551,8 +551,8 @@ class SassNumber extends SassLiteral {
      */
     public function nth($i) {
         $i = $i - 1; # SASS uses 1-offset arrays
-        if (isset($this->value[$i])) {
-            return new SassNumber($this->value[$i]);
+        if (isset($this->value)) {
+            return new SassNumber($this->value);
         }
         return new SassBoolean(false);
     }
