@@ -414,7 +414,7 @@ class SassParser {
           } else {
             $newNode = $this->parse($code, $type);
               foreach($newNode->children as $children){
-                array_push($return->children,$children);
+                array_push($return->children, $children);
               }
           }
       }
