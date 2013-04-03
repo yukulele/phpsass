@@ -133,8 +133,8 @@ class SassList extends SassLiteral {
     if ($lex) {
       $context = new SassContext($context);
       $list = SassScriptParser::$instance->evaluate($list, $context);
+      $list = $list->toString();
     }
-
     if ($separator == 'auto') {
       $separator = ',';
       $list = $list = self::_build_list($list, ',');
