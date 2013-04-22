@@ -318,7 +318,7 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase {
   }
 
   public function testMediaInTwoMixins() {
-    $this->runSassTest('media_in_mixin.scss');
+    $this->runSassTest('media_in_mixin_in_mixin.scss');
   }
 
   public function testWarnImported() {
