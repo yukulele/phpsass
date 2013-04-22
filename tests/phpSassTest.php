@@ -237,6 +237,10 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase {
     $this->runSassTest('mixins.sass');
   }
 
+  public function testMixinInMixin() {
+    $this->runSassTest('mixin_in_mixin.scss');
+  }
+
   public function testMultiline() {
     $this->runSassTest('multiline.sass');
   }
