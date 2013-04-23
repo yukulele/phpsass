@@ -337,4 +337,8 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase {
   public function testWarn() {
     $this->runSassTest('warn.sass');
   }
+
+  public function testMixinSetvar() {
+    $this->runSassTest('mixin_setvar.scss');
+  }
 }
