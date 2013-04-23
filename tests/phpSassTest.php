@@ -321,6 +321,10 @@ class PHPSass_TestCase extends PHPUnit_Framework_TestCase {
     $this->runSassTest('media_in_mixin_in_mixin.scss');
   }
 
+  public function testIfParentheses() {
+    $this->runSassTest('if_parentheses.scss');
+  }
+
   public function testListEmpty() {
     $this->runSassTest('list_empty.scss');
   }
