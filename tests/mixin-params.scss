@@ -18,3 +18,7 @@ two {
 both {
 	@include test('one', 'two');
 }
+
+whitespace {
+  @include test ('one', 'two');
+}
